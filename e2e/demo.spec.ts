@@ -1,4 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openSection(page: Page, name: string) {
+  const mobileMenu = page.getByRole("button", { name: "Abrir menu" });
+  if (await mobileMenu.isVisible()) await mobileMenu.click();
+  await page
+    .getByRole("navigation", { name: "Menu principal" })
+    .getByRole("button", { name, exact: true })
+    .click();
+}
+
 test("demo renders and allows a synthetic expense", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Visão geral das finanças" })).toBeVisible();
@@ -10,11 +20,42 @@ test("demo renders and allows a synthetic expense", async ({ page }) => {
   await expect(page.getByText("Compra fictícia de teste")).toBeVisible();
   await expect(page.getByRole("status")).toContainText("Não foi salva no Google Sheets");
 });
-test("health and manifest are accessible", async ({ request }) => {
+
+test("simulated payment stays local and calendar remains a dry run", async ({ page }) => {
+  await page.goto("/");
+  await openSection(page, "Contas");
+  await expect(page.getByRole("heading", { name: "Contas" })).toBeVisible();
+  await page.getByRole("button", { name: "Marcar paga (demo)" }).first().click();
+  await expect(page.getByRole("status")).toContainText("Nenhuma alteração foi enviada");
+  await openSection(page, "Calendário");
+  await expect(
+    page.getByRole("heading", { name: "Pré-visualização do calendário" }),
+  ).toBeVisible();
+  await expect(page.getByText("Integração desativada")).toBeVisible();
+});
+
+test("budget limits are changeable only within the demonstration", async ({ page }) => {
+  await page.goto("/");
+  await openSection(page, "Orçamentos");
+  await expect(page.getByRole("heading", { name: "Limites por categoria" })).toBeVisible();
+  const input = page.getByRole("textbox", { name: "Orçamento Casa" });
+  await input.fill("700,00");
+  await input.press("Tab");
+  await expect(page.getByRole("status")).toContainText("Orçamento da demonstração");
+});
+
+test("health, manifest and synthetic API are cache-safe", async ({ request }) => {
   const health = await request.get("/api/health");
   expect(health.ok()).toBeTruthy();
   expect((await health.json()).status).toBe("ok");
   const manifest = await request.get("/manifest.webmanifest");
   expect(manifest.ok()).toBeTruthy();
-  expect((await manifest.json()).display).toBe("standalone");
+  const manifestData = await manifest.json();
+  expect(manifestData.display).toBe("standalone");
+  expect(manifestData.icons).toHaveLength(2);
+  const demo = await request.get("/api/demo");
+  expect(demo.ok()).toBeTruthy();
+  expect(demo.headers()["cache-control"]).toContain("no-store");
+  expect(demo.headers()["x-demo-data"]).toBe("synthetic");
+  expect((await demo.json()).mode).toBe("demo");
 });

@@ -1,11 +1,11 @@
 import { readFileSync, existsSync } from "node:fs";
 import assert from "node:assert/strict";
-const manifest = readFileSync("src/app/manifest.ts","utf8");
-const worker = readFileSync("public/sw.js","utf8");
-assert.match(manifest,/display:\s*"standalone"/);
-assert.match(manifest,/start_url:/);
-assert.match(manifest,/icons:/);
-assert.match(worker,/_next\/static/);
-assert.doesNotMatch(worker,/caches\.open\("financial/);
+const manifest = readFileSync("src/app/manifest.ts", "utf8");
+const worker = readFileSync("public/sw.js", "utf8");
+assert.match(manifest, /display:\s*"standalone"/);
+assert.match(manifest, /start_url:/);
+assert.match(manifest, /icons:/);
+assert.match(worker, /_next\/static/);
+assert.doesNotMatch(worker, /caches\.open\("financial/);
 assert.ok(existsSync("public/icons/icon.svg"));
 console.log("Static PWA invariants passed.");

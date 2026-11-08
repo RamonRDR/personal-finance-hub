@@ -3,7 +3,9 @@ import { useEffect } from "react";
 export function PwaRegistration() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
-    navigator.serviceWorker.register("/sw.js").catch(() => { /* No offline data fallback. */ });
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      /* No offline data fallback. */
+    });
   }, []);
   return null;
 }

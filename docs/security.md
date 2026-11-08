@@ -4,6 +4,7 @@ The app is an **isolated public synthetic demo**. All Google writes are disabled
 A read-only Google API client exists but is not bound to a real OAuth session.
 
 Before handling any live financial data:
+
 1. Configure Google OAuth consent with minimum read-only Sheets scope.
 2. Restrict access to one approved Google identity.
 3. Add durable server-side encrypted token storage, expiry, revocation and CSRF protection.

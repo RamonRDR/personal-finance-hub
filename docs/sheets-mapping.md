@@ -7,20 +7,20 @@ transaction descriptions, account numbers, or personal identifiers are included.
 Workbook locale: pt_BR. Timezone: America/Sao_Paulo.
 12 tabs were found, one of which is a hidden backup.
 
-| Tab | Header row | Observed column structure | Reader policy |
-| --- | ---: | --- | --- |
-| Resumo 2026 | 4 | Month and aggregate totals | Calculated presentation, never transaction source |
-| Contas Fixas e Vencimentos | 6 | Competência, Conta, Âmbito, Vencimento, Avisar em, Previsto, Pago, Data pagamento, Situação, Modalidade, Banco, Reembolso, Observações | Read-only bill source; formulas in E:I |
-| Cartões - Visão Total | presentation | Card and monthly summary tables | Aggregations, hyperlinks; exclude |
-| Cartões - Avulsas | 6 | Data da compra, Cartão, Descrição da compra, Categoria da casa, Quem comprou, Tipo, Vencimento, Valor avulso, Status da fatura, Observações | Individual purchases |
-| Cartões - Parceladas | 10 | Data da compra, Cartão, Descrição da compra, Categoria da casa, Quem comprou, Parcela, Vencimento, Valor da parcela, Status da fatura, Observações | Summary formulas above header; installments need stable IDs |
-| Faturas dos Cartões | 6 | Mês da fatura, Cartão, Vencimento, Assinaturas previstas, Parcelas e avulsos, Total previsto, Total da fatura, Valor pago, Data do pagamento, Situação, Saldo a pagar, Diferença, Observações | Liabilities, not consumption |
-| Cartões - Assinaturas | 6 | Cartão, Assinatura, Valor mensal, Categoria da casa, Titular, Desde, Até, Status, Observações | Plans, not confirmed charges |
-| Outubro 2026 | 6 | Data, Descrição, Categoria, Quem comprou, Forma de pagamento, Banco, Valor, Observações | Daily subtotals must be skipped |
-| Novembro 2026 | 6 | Same monthly expense columns | Daily subtotals must be skipped |
-| Dezembro 2026 | 6 | Same monthly expense columns | Same layout |
-| Despesas Externas | 6 | Data do pagamento, Vencimento, Origem, Descrição / fornecedor, Quem pagou, Valor, Status, Reembolso previsto?, Quem reembolsa, Valor reembolsado, Saldo a reembolsar, Rateio / observações | Exclude from household totals |
-| Hidden historical backup | 6 | Same as monthly expense columns | Exclude from live import |
+| Tab                        |   Header row | Observed column structure                                                                                                                                                                     | Reader policy                                               |
+| -------------------------- | -----------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Resumo 2026                |            4 | Month and aggregate totals                                                                                                                                                                    | Calculated presentation, never transaction source           |
+| Contas Fixas e Vencimentos |            6 | Competência, Conta, Âmbito, Vencimento, Avisar em, Previsto, Pago, Data pagamento, Situação, Modalidade, Banco, Reembolso, Observações                                                        | Read-only bill source; formulas in E:I                      |
+| Cartões - Visão Total      | presentation | Card and monthly summary tables                                                                                                                                                               | Aggregations, hyperlinks; exclude                           |
+| Cartões - Avulsas          |            6 | Data da compra, Cartão, Descrição da compra, Categoria da casa, Quem comprou, Tipo, Vencimento, Valor avulso, Status da fatura, Observações                                                   | Individual purchases                                        |
+| Cartões - Parceladas       |           10 | Data da compra, Cartão, Descrição da compra, Categoria da casa, Quem comprou, Parcela, Vencimento, Valor da parcela, Status da fatura, Observações                                            | Summary formulas above header; installments need stable IDs |
+| Faturas dos Cartões        |            6 | Mês da fatura, Cartão, Vencimento, Assinaturas previstas, Parcelas e avulsos, Total previsto, Total da fatura, Valor pago, Data do pagamento, Situação, Saldo a pagar, Diferença, Observações | Liabilities, not consumption                                |
+| Cartões - Assinaturas      |            6 | Cartão, Assinatura, Valor mensal, Categoria da casa, Titular, Desde, Até, Status, Observações                                                                                                 | Plans, not confirmed charges                                |
+| Outubro 2026               |            6 | Data, Descrição, Categoria, Quem comprou, Forma de pagamento, Banco, Valor, Observações                                                                                                       | Daily subtotals must be skipped                             |
+| Novembro 2026              |            6 | Same monthly expense columns                                                                                                                                                                  | Daily subtotals must be skipped                             |
+| Dezembro 2026              |            6 | Same monthly expense columns                                                                                                                                                                  | Same layout                                                 |
+| Despesas Externas          |            6 | Data do pagamento, Vencimento, Origem, Descrição / fornecedor, Quem pagou, Valor, Status, Reembolso previsto?, Quem reembolsa, Valor reembolsado, Saldo a reembolsar, Rateio / observações    | Exclude from household totals                               |
+| Hidden historical backup   |            6 | Same as monthly expense columns                                                                                                                                                               | Exclude from live import                                    |
 
 ## Verified vs proposed
 

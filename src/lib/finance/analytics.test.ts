@@ -8,7 +8,13 @@ describe("financial logic", () => {
     expect(billState(demoSnapshot.bills[2], "2026-11-08")).toBe("paid");
   });
   it("excludes card invoice payments from consumption totals", () => {
-    const result = monthSummary(demoSnapshot.expenses,demoSnapshot.bills,demoSnapshot.budgets,"2026-11","2026-11-08");
+    const result = monthSummary(
+      demoSnapshot.expenses,
+      demoSnapshot.bills,
+      demoSnapshot.budgets,
+      "2026-11",
+      "2026-11-08",
+    );
     expect(result.totalCents).toBe(76630);
     expect(result.paidCount).toBe(1);
     expect(result.overdueCount).toBe(1);
@@ -16,13 +22,15 @@ describe("financial logic", () => {
   });
   it("compares periods safely", () => {
     expect(previousMonth("2026-01")).toBe("2025-12");
-    expect(spendingInsights(demoSnapshot.expenses,"2026-11").length).toBeGreaterThan(0);
+    expect(spendingInsights(demoSnapshot.expenses, "2026-11").length).toBeGreaterThan(0);
   });
   it("creates a dry run without duplicate operations", () => {
-    const item = calendarPreview(demoSnapshot.bills.slice(0,1))[0];
+    const item = calendarPreview(demoSnapshot.bills.slice(0, 1))[0];
     expect(item.action).toBe("create");
-    expect(calendarPreview(demoSnapshot.bills.slice(0,1),{
-      b1:{date:item.date,title:item.title}
-    })[0].action).toBe("unchanged");
+    expect(
+      calendarPreview(demoSnapshot.bills.slice(0, 1), {
+        b1: { date: item.date, title: item.title },
+      })[0].action,
+    ).toBe("unchanged");
   });
 });

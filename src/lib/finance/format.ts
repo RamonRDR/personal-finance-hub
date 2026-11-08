@@ -7,16 +7,29 @@ export function parseBrazilianDate(input: unknown): string | null {
   if (ISO_RE.test(value)) {
     const [year, month, day] = value.split("-").map(Number);
     const date = new Date(Date.UTC(year, month - 1, day));
-    return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month &&
-      date.getUTCDate() === day ? value : null;
+    return date.getUTCFullYear() === year &&
+      date.getUTCMonth() + 1 === month &&
+      date.getUTCDate() === day
+      ? value
+      : null;
   }
   const match = DATE_RE.exec(value);
   if (!match) return null;
-  const day = Number(match[1]); const month = Number(match[2]); const year = Number(match[3]);
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
   const date = new Date(Date.UTC(year, month - 1, day));
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() + 1 !== month ||
-      date.getUTCDate() !== day) return null;
-  return [String(year).padStart(4, "0"), String(month).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() + 1 !== month ||
+    date.getUTCDate() !== day
+  )
+    return null;
+  return [
+    String(year).padStart(4, "0"),
+    String(month).padStart(2, "0"),
+    String(day).padStart(2, "0"),
+  ].join("-");
 }
 
 export function parseMoneyCents(input: unknown): number | null {

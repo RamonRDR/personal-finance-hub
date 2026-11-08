@@ -16,14 +16,14 @@ spreadsheets or create Calendar events.
 - Google Calendar **dry-run** preview with no real event writes.
 - Read-only Google Sheets client code and documented workbook structure,
   pending secure OAuth activation.
-- PWA manifest, app icon, safe service worker, offline notice and mobile UI.
+- PWA manifest, PNG icons, safe service worker, offline notice and mobile UI.
 - Unit, component and browser test suites, plus GitHub Actions CI.
 
 ## Quick start
 
 Requirements: Node.js 24 (or compatible 22+) and npm.
 
-1. Run npm install
+1. Run npm ci
 2. Run npm run dev
 3. Open http://localhost:3000
 
@@ -49,9 +49,9 @@ production-ready integration.
 ## PWA installation
 
 When hosted on HTTPS with a supported browser, use the browser's install
-option on Android or Safari's Share > Add to Home Screen on iPhone. SVG icon
-support and installation behavior vary by device; an audited PNG icon set
-and physical-device validation remain release gates. Offline mode displays
+option on Android or Safari's Share > Add to Home Screen on iPhone.
+PNG icons are provided for Android (192px and 512px) and iOS (180px);
+physical-device validation remains a release gate. Offline mode displays
 a public connectivity notice; it does not store transactions.
 
 No deployment occurs automatically. Never use personal financial data in

@@ -24,3 +24,8 @@ Do not use process memory, localStorage, or a cache as financial source of truth
 
 PWA worker caches only versioned static scripts/styles and its public
 offline notice. API responses, OAuth and finance data are always network-only.
+
+The read-only workbook normalizer checks observed header sentinels before
+interpreting rows. Mismatched or missing tabs generate warnings, not guessed
+column mappings. Card invoice entries are excluded from payable totals when
+already represented by the consolidated bill ledger.

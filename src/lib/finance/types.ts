@@ -29,7 +29,7 @@ export interface Budget {
 export interface ImportWarning {
   tab: string;
   row: number;
-  code: "invalid-date" | "invalid-money" | "missing-description" | "duplicate";
+  code: "invalid-date" | "invalid-money" | "missing-description" | "duplicate" | "missing-tab" | "invalid-header";
 }
 export interface ImportResult<T> {
   records: T[];

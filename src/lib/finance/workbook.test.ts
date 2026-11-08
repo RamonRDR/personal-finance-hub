@@ -4,22 +4,51 @@ import { normalizeReadOnlyWorkbook } from "./workbook";
 function fixture() {
   const monthly: unknown[][] = Array.from({ length: 6 }, () => []);
   monthly[5] = [
-    "Data", "Descrição", "Categoria", "Quem comprou",
-    "Forma de pagamento", "Banco", "Valor (R$)", "Observações",
+    "Data",
+    "Descrição",
+    "Categoria",
+    "Quem comprou",
+    "Forma de pagamento",
+    "Banco",
+    "Valor (R$)",
+    "Observações",
   ];
   monthly.push([
-    "08/11/2026", "Mercado de Exemplo", "Supermercado",
-    "Pessoa Exemplo", "Pix", "Banco Demo", "R$ 150,00", "",
+    "08/11/2026",
+    "Mercado de Exemplo",
+    "Supermercado",
+    "Pessoa Exemplo",
+    "Pix",
+    "Banco Demo",
+    "R$ 150,00",
+    "",
   ]);
   const accounts: unknown[][] = Array.from({ length: 6 }, () => []);
   accounts[5] = [
-    "Competência", "Conta", "Âmbito", "Vencimento", "Avisar em",
-    "Previsto (R$)", "Pago (R$)", "Data pagamento", "Situação",
-    "Modalidade", "Banco", "Reembolso", "Observações",
+    "Competência",
+    "Conta",
+    "Âmbito",
+    "Vencimento",
+    "Avisar em",
+    "Previsto (R$)",
+    "Pago (R$)",
+    "Data pagamento",
+    "Situação",
+    "Modalidade",
+    "Banco",
+    "Reembolso",
+    "Observações",
   ];
   accounts.push([
-    "11/2026", "Conta de Exemplo", "Casa", "10/11/2026",
-    "08/11/2026", "R$ 60,00", "", "", "Pendente",
+    "11/2026",
+    "Conta de Exemplo",
+    "Casa",
+    "10/11/2026",
+    "08/11/2026",
+    "R$ 60,00",
+    "",
+    "",
+    "Pendente",
   ]);
   return { monthly, accounts };
 }
@@ -44,7 +73,9 @@ describe("workbook mapping validation", () => {
     const result = normalizeReadOnlyWorkbook({ "Novembro 2026": data.monthly });
     expect(result.snapshot.expenses).toHaveLength(0);
     expect(result.warnings).toContainEqual({
-      tab: "Novembro 2026", row: 6, code: "invalid-header",
+      tab: "Novembro 2026",
+      row: 6,
+      code: "invalid-header",
     });
   });
 });

@@ -1,40 +1,73 @@
 import { deduplicateEntries, importBills, importExpenses, SHEETS } from "./import";
 import type { ImportWarning, Snapshot } from "./types";
 
-export const EXPECTED_HEADERS: Record<string, { row: number; sentinels: Array<[number, string]> }> = {
-  "Outubro 2026": {
-    row: 6,
-    sentinels: [[0, "Data"], [1, "Descrição"], [6, "Valor (R$)"]],
-  },
-  "Novembro 2026": {
-    row: 6,
-    sentinels: [[0, "Data"], [1, "Descrição"], [6, "Valor (R$)"]],
-  },
-  "Dezembro 2026": {
-    row: 6,
-    sentinels: [[0, "Data"], [1, "Descrição"], [6, "Valor (R$)"]],
-  },
-  "Cartões - Avulsas": {
-    row: 6,
-    sentinels: [[0, "Data da compra"], [2, "Descrição da compra"], [7, "Valor avulso (R$)"]],
-  },
-  "Cartões - Parceladas": {
-    row: 10,
-    sentinels: [[0, "Data da compra"], [2, "Descrição da compra"], [7, "Valor da parcela (R$)"]],
-  },
-  "Despesas Externas": {
-    row: 6,
-    sentinels: [[0, "Data do pagamento"], [3, "Descrição / fornecedor"], [5, "Valor (R$)"]],
-  },
-  "Contas Fixas e Vencimentos": {
-    row: 6,
-    sentinels: [[1, "Conta"], [3, "Vencimento"], [8, "Situação"]],
-  },
-  "Faturas dos Cartões": {
-    row: 6,
-    sentinels: [[1, "Cartão"], [2, "Vencimento"], [9, "Situação"]],
-  },
-};
+export const EXPECTED_HEADERS: Record<string, { row: number; sentinels: Array<[number, string]> }> =
+  {
+    "Outubro 2026": {
+      row: 6,
+      sentinels: [
+        [0, "Data"],
+        [1, "Descrição"],
+        [6, "Valor (R$)"],
+      ],
+    },
+    "Novembro 2026": {
+      row: 6,
+      sentinels: [
+        [0, "Data"],
+        [1, "Descrição"],
+        [6, "Valor (R$)"],
+      ],
+    },
+    "Dezembro 2026": {
+      row: 6,
+      sentinels: [
+        [0, "Data"],
+        [1, "Descrição"],
+        [6, "Valor (R$)"],
+      ],
+    },
+    "Cartões - Avulsas": {
+      row: 6,
+      sentinels: [
+        [0, "Data da compra"],
+        [2, "Descrição da compra"],
+        [7, "Valor avulso (R$)"],
+      ],
+    },
+    "Cartões - Parceladas": {
+      row: 10,
+      sentinels: [
+        [0, "Data da compra"],
+        [2, "Descrição da compra"],
+        [7, "Valor da parcela (R$)"],
+      ],
+    },
+    "Despesas Externas": {
+      row: 6,
+      sentinels: [
+        [0, "Data do pagamento"],
+        [3, "Descrição / fornecedor"],
+        [5, "Valor (R$)"],
+      ],
+    },
+    "Contas Fixas e Vencimentos": {
+      row: 6,
+      sentinels: [
+        [1, "Conta"],
+        [3, "Vencimento"],
+        [8, "Situação"],
+      ],
+    },
+    "Faturas dos Cartões": {
+      row: 6,
+      sentinels: [
+        [1, "Cartão"],
+        [2, "Vencimento"],
+        [9, "Situação"],
+      ],
+    },
+  };
 
 export const READ_TABS = Object.keys(EXPECTED_HEADERS);
 export type WorkbookRows = Record<string, unknown[][]>;

@@ -20,6 +20,22 @@ describe("financial logic", () => {
     expect(result.overdueCount).toBe(1);
     expect(result.openCount).toBe(3);
   });
+  it("never mixes external-business expenses into household totals", () => {
+    const additional = {
+      ...demoSnapshot.expenses[0],
+      id: "external-example",
+      source: "external" as const,
+      amountCents: 1000000,
+    };
+    const summary = monthSummary(
+      [...demoSnapshot.expenses, additional],
+      demoSnapshot.bills,
+      demoSnapshot.budgets,
+      "2026-11",
+      "2026-11-08",
+    );
+    expect(summary.totalCents).toBe(76630);
+  });
   it("compares periods safely", () => {
     expect(previousMonth("2026-01")).toBe("2025-12");
     expect(spendingInsights(demoSnapshot.expenses, "2026-11").length).toBeGreaterThan(0);

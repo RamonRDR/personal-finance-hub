@@ -19,7 +19,7 @@ export function monthSummary(
   month: string,
   asOf: string,
 ) {
-  const current = expenses.filter((e) => e.date.startsWith(month));
+  const current = expenses.filter((e) => e.source !== "external" && e.date.startsWith(month));
   const monthBills = bills.filter((b) => b.dueDate.startsWith(month));
   const totalCents = current.reduce((sum, e) => sum + e.amountCents, 0);
   const paidBills = monthBills.filter((b) => b.status === "paid");
@@ -50,17 +50,19 @@ export function previousMonth(month: string) {
   return new Date(Date.UTC(year, part - 2, 1)).toISOString().slice(0, 7);
 }
 export function monthlyHistory(expenses: Expense[]) {
-  const months = [...new Set(expenses.map((e) => e.date.slice(0, 7)))].sort();
+  const household = expenses.filter((e) => e.source !== "external");
+  const months = [...new Set(household.map((e) => e.date.slice(0, 7)))].sort();
   return months.map((month) => ({
     month,
-    cents: expenses
+    cents: household
       .filter((e) => e.date.startsWith(month))
       .reduce((sum, e) => sum + e.amountCents, 0),
   }));
 }
 export function spendingInsights(expenses: Expense[], month: string) {
-  const current = categoryTotals(expenses.filter((e) => e.date.startsWith(month)));
-  const past = categoryTotals(expenses.filter((e) => e.date.startsWith(previousMonth(month))));
+  const household = expenses.filter((e) => e.source !== "external");
+  const current = categoryTotals(household.filter((e) => e.date.startsWith(month)));
+  const past = categoryTotals(household.filter((e) => e.date.startsWith(previousMonth(month))));
   return current
     .flatMap((entry) => {
       const previous = past.find((p) => p.category === entry.category)?.cents ?? 0;

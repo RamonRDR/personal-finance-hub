@@ -1,0 +1,29 @@
+import type { Snapshot } from "../finance/types";
+// Invented people, vendors, institutions and amounts. No real financial data.
+export const demoSnapshot: Snapshot = {
+  mode: "demo", lastSyncedAt: null,
+  expenses: [
+    { id:"d1", date:"2026-11-01", description:"Mercado Modelo", category:"Supermercado", payer:"Pessoa A", method:"Pix", account:"Conta Exemplo", amountCents:23890, source:"direct" },
+    { id:"d2", date:"2026-11-02", description:"Energia Exemplo", category:"Casa", payer:"Pessoa A", method:"Débito", account:"Conta Exemplo", amountCents:19820, source:"direct" },
+    { id:"d3", date:"2026-11-03", description:"Café Central Fictício", category:"Alimentação", payer:"Pessoa B", method:"Pix", account:"Banco Exemplo", amountCents:3290, source:"direct" },
+    { id:"d4", date:"2026-11-04", description:"Loja Demonstração", category:"Compras", payer:"Pessoa A", method:null, account:"Cartão Demo", amountCents:12990, source:"card-oneoff" },
+    { id:"d5", date:"2026-11-05", description:"Internet de Exemplo", category:"Casa", payer:"Pessoa B", method:"Pix", account:"Banco Exemplo", amountCents:9900, source:"direct" },
+    { id:"d6", date:"2026-11-06", description:"Farmácia Fictícia", category:"Saúde", payer:"Pessoa B", method:"Débito", account:"Conta Exemplo", amountCents:6740, source:"direct" },
+    { id:"d7", date:"2026-10-05", description:"Mercado Modelo", category:"Supermercado", payer:"Pessoa A", method:"Pix", account:"Conta Exemplo", amountCents:18990, source:"direct" },
+    { id:"d8", date:"2026-10-09", description:"Energia Exemplo", category:"Casa", payer:"Pessoa A", method:"Débito", account:"Conta Exemplo", amountCents:24200, source:"direct" },
+    { id:"d9", date:"2026-10-16", description:"Restaurante Inventado", category:"Alimentação", payer:"Pessoa B", method:"Pix", account:"Banco Exemplo", amountCents:2500, source:"direct" },
+    { id:"d10", date:"2026-10-22", description:"Loja Demonstração", category:"Compras", payer:"Pessoa A", method:null, account:"Cartão Demo", amountCents:15700, source:"card-installment" },
+    { id:"d11", date:"2026-09-09", description:"Mercado Modelo", category:"Supermercado", payer:"Pessoa A", method:"Pix", account:"Conta Exemplo", amountCents:21550, source:"direct" }
+  ],
+  bills: [
+    { id:"b1", dueDate:"2026-11-10", description:"Condomínio Exemplo", category:"Casa", plannedCents:18000, paidCents:null, paidAt:null, status:"pending", recurring:true },
+    { id:"b2", dueDate:"2026-11-12", description:"Água Exemplo", category:"Casa", plannedCents:6200, paidCents:null, paidAt:null, status:"pending", recurring:true },
+    { id:"b3", dueDate:"2026-11-03", description:"Internet de Exemplo", category:"Casa", plannedCents:9900, paidCents:9900, paidAt:"2026-11-03", status:"paid", recurring:true },
+    { id:"b4", dueDate:"2026-11-06", description:"Cartão Demo", category:"Cartão", plannedCents:22900, paidCents:null, paidAt:null, status:"pending", recurring:false },
+    { id:"b5", dueDate:"2026-12-03", description:"Internet de Exemplo", category:"Casa", plannedCents:9900, paidCents:null, paidAt:null, status:"pending", recurring:true }
+  ],
+  budgets: [
+    { category:"Supermercado", limitCents:45000 }, { category:"Casa", limitCents:60000 },
+    { category:"Alimentação", limitCents:15000 }, { category:"Compras", limitCents:22000 }
+  ]
+};

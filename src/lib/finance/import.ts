@@ -24,7 +24,7 @@ export function importExpenses(tab: keyof typeof SHEETS, rows: unknown[][]): Imp
     const category = String(row[direct ? 2 : external ? 2 : 3] ?? "").trim();
     const date = parseBrazilianDate(row[0]);
     const amountCents = parseMoneyCents(rawValue);
-    if (/^(TOTAL DO DIA|TOTAL|BETH •|RAMON •)/i.test(description)) continue;
+    if (/^(TOTAL DO DIA|TOTAL)/i.test(description)) continue;
     if (!description && (rawValue === "" || rawValue == null)) continue;
     if (!date) {
       if (description || rawValue != null)

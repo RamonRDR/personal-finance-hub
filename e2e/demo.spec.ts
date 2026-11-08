@@ -24,7 +24,7 @@ test("demo renders and allows a synthetic expense", async ({ page }) => {
 test("simulated payment stays local and calendar remains a dry run", async ({ page }) => {
   await page.goto("/");
   await openSection(page, "Contas");
-  await expect(page.getByRole("heading", { name: "Contas" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Contas", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Marcar paga (demo)" }).first().click();
   await expect(page.getByRole("status")).toContainText("Nenhuma alteração foi enviada");
   await openSection(page, "Calendário");

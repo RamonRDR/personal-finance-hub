@@ -3,7 +3,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import {
   LayoutDashboard, ReceiptText, CalendarDays, ChartNoAxesCombined, Wallet,
-  Settings2, Plus, ArrowUpRight, ArrowDownRight, Clock3, CheckCircle2,
+  Settings2, Plus, ArrowUpRight, Clock3, CheckCircle2,
   AlertTriangle, CreditCard, ChevronRight, ShieldCheck, RefreshCcw, X, Menu,
 } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { demoSnapshot } from "@/lib/demo/data";
 import { formatDate, formatMoney, parseMoneyCents } from "@/lib/finance/format";
-import { billState, categoryTotals, monthSummary, monthlyHistory, previousMonth, spendingInsights } from "@/lib/finance/analytics";
+import { billState, monthSummary, monthlyHistory, previousMonth, spendingInsights } from "@/lib/finance/analytics";
 import { calendarPreview } from "@/lib/finance/calendar-plan";
 import type { Bill, Budget, Expense } from "@/lib/finance/types";
 
@@ -24,7 +24,11 @@ const tabs: Array<{name:View; icon:typeof LayoutDashboard}> = [
 ];
 const MONTHS = ["2026-09","2026-10","2026-11","2026-12"];
 const categories = ["Alimentação","Casa","Compras","Saúde","Supermercado","Transporte","Outros"];
-const todayInBrazil = () => new Intl.DateTimeFormat("en-CA", {timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const todayInBrazil = () => {
+  const parts = new Intl.DateTimeFormat("en-US", {timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  const value = Object.fromEntries(parts.map((part) => [part.type,part.value]));
+  return value.year + "-" + value.month + "-" + value.day;
+};
 
 function MiniCard({title,value,subtitle,icon:Icon,tone}:{
   title:string;value:string;subtitle:string;icon:typeof LayoutDashboard;tone?:string

@@ -29,7 +29,7 @@ This is a staged project, not a complete production finance tool.
 - [ ] Real Google error, permission, quota and renewal testing
 - [ ] PWA install check over HTTPS on real iOS and Android devices
 - [ ] Production privacy review and controlled deployment, only with authorization
-- [ ] Final self-review, Codex Review *only on explicit request*, and owner-approved merge
+- [ ] Final self-review, Codex Review _only on explicit request_, and owner-approved merge
 
 The sandbox demo does not prove the OAuth flow, external Google APIs, true
 offline usability or installation on physical phones. Existing Google Sheets,

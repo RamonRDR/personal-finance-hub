@@ -28,9 +28,7 @@ test("simulated payment stays local and calendar remains a dry run", async ({ pa
   await page.getByRole("button", { name: "Marcar paga (demo)" }).first().click();
   await expect(page.getByRole("status")).toContainText("Nenhuma alteração foi enviada");
   await openSection(page, "Calendário");
-  await expect(
-    page.getByRole("heading", { name: "Pré-visualização do calendário" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pré-visualização do calendário" })).toBeVisible();
   await expect(page.getByText("Integração desativada")).toBeVisible();
 });
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { googleConfig } from "@/lib/google/config";
 import { authorizedGoogleToken, PRIVATE_HEADERS } from "@/lib/google/auth";
 import { loadReadOnlyWorkbook } from "@/lib/google/load";
+import { workbookReadiness } from "@/lib/google/readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,12 @@ export async function GET(request: NextRequest) {
       );
     }
     const workbook = await loadReadOnlyWorkbook(config.spreadsheetId, token);
+    const readiness = workbookReadiness(workbook);
     return NextResponse.json(
       {
         ...workbook,
         snapshot: { ...workbook.snapshot, lastSyncedAt: new Date().toISOString() },
-        complete: workbook.warnings.length === 0 && workbook.failedTabs.length === 0,
+        ...readiness,
       },
       { headers: PRIVATE_HEADERS },
     );

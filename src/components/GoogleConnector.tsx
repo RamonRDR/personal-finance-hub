@@ -13,6 +13,7 @@ interface WorkbookReply {
   snapshot?: Snapshot;
   warnings?: ImportWarning[];
   failedTabs?: string[];
+  complete?: boolean;
 }
 
 export function GoogleConnector({
@@ -58,13 +59,16 @@ export function GoogleConnector({
         throw new Error("Resposta inesperada da planilha.");
       }
       const warnings = result.warnings ?? [];
-      onLoad(result.snapshot, warnings);
       const failed = result.failedTabs?.length ?? 0;
-      setMessage(
-        failed
-          ? "Algumas abas falharam na leitura. Confira os avisos antes de utilizar os totais."
-          : "Dados carregados apenas para consulta.",
-      );
+      if (result.complete !== true || warnings.length || failed) {
+        setMessage(
+          "Leitura incompleta (" + warnings.length + " avisos, " + failed +
+            " falhas de abas). A importação foi bloqueada para evitar totais incorretos.",
+        );
+        return;
+      }
+      onLoad(result.snapshot, warnings);
+      setMessage("Leitura validada. Nenhuma alteração foi feita na planilha.");
     } catch {
       setMessage("Não foi possível carregar a planilha. Nenhum dado foi alterado.");
     } finally {

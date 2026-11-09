@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import { GoogleConnector } from "./GoogleConnector";
 import {
   LayoutDashboard,
   ReceiptText,
@@ -31,7 +32,7 @@ import {
   spendingInsights,
 } from "@/lib/finance/analytics";
 import { calendarPreview } from "@/lib/finance/calendar-plan";
-import type { Bill, Budget, Expense } from "@/lib/finance/types";
+import type { Bill, Budget, Expense, Snapshot, ImportWarning } from "@/lib/finance/types";
 
 type View =
   | "Dashboard"
@@ -100,6 +101,7 @@ function MiniCard({
 
 export function FinanceApp() {
   const [view, setView] = useState<View>("Dashboard");
+  const [dataMode, setDataMode] = useState<"demo" | "google-read-only">("demo");
   const [month, setMonth] = useState("2026-11");
   const [expenses, setExpenses] = useState<Expense[]>(demoSnapshot.expenses);
   const [bills, setBills] = useState<Bill[]>(demoSnapshot.bills);
@@ -136,6 +138,7 @@ export function FinanceApp() {
 
   function addDemoExpense(event: FormEvent) {
     event.preventDefault();
+    if (dataMode !== "demo") return;
     const cents = parseMoneyCents(value);
     if (!description.trim() || cents === null || cents <= 0 || !date) {
       setNotice("Confira descrição, data e valor.");
@@ -163,6 +166,7 @@ export function FinanceApp() {
     setNotice("Despesa simulada adicionada. Não foi salva no Google Sheets.");
   }
   function markPaid(id: string) {
+    if (dataMode !== "demo") return;
     setBills((list) =>
       list.map((bill) =>
         bill.id === id
@@ -178,6 +182,7 @@ export function FinanceApp() {
     setNotice("Pagamento simulado. Nenhuma alteração foi enviada à planilha.");
   }
   function editBudget(target: string, input: string) {
+    if (dataMode !== "demo") return;
     const cents = parseMoneyCents(input);
     if (cents === null || cents < 0) {
       setNotice("Valor de orçamento inválido.");
@@ -187,6 +192,25 @@ export function FinanceApp() {
       list.map((b) => (b.category === target ? { ...b, limitCents: cents } : b)),
     );
     setNotice("Orçamento da demonstração atualizado nesta sessão.");
+  }
+  function restoreDemo() {
+    setExpenses(demoSnapshot.expenses);
+    setBills(demoSnapshot.bills);
+    setBudgets(demoSnapshot.budgets);
+    setDataMode("demo");
+    setNotice("Demonstração restaurada.");
+  }
+  function showReadOnlyWorkbook(snapshot: Snapshot, warnings: ImportWarning[]) {
+    if (snapshot.mode !== "google-read-only") return;
+    setExpenses(snapshot.expenses);
+    setBills(snapshot.bills);
+    setBudgets(snapshot.budgets);
+    setDataMode("google-read-only");
+    setShowForm(false);
+    setView("Dashboard");
+    setNotice(warnings.length
+      ? "Leitura concluída com " + warnings.length + " avisos de mapeamento. Confira a origem antes de usar os totais."
+      : "Dados carregados somente para leitura. Nenhum lançamento ou pagamento será gravado.");
   }
   function goto(next: View) {
     setView(next);
@@ -250,7 +274,7 @@ export function FinanceApp() {
           </div>
           <div className="topbar-right">
             <span className="demo-tag">
-              <span className="demo-dot" /> MODO DEMONSTRAÇÃO
+              <span className="demo-dot" /> {dataMode === "demo" ? "MODO DEMONSTRAÇÃO" : "GOOGLE SHEETS · SOMENTE LEITURA"}
             </span>
             <span className="avatar">FH</span>
           </div>
@@ -285,7 +309,7 @@ export function FinanceApp() {
                   ))}
                 </select>
               </label>
-              <button className="button-primary" onClick={() => setShowForm(true)}>
+              <button className="button-primary" onClick={() => setShowForm(true)} disabled={dataMode !== "demo"}>
                 <Plus size={18} /> Nova despesa
               </button>
             </div>
@@ -293,8 +317,9 @@ export function FinanceApp() {
           <div className="info-strip">
             <ShieldCheck size={17} />
             <span>
-              Ambiente de demonstração. Os dados são sintéticos e as alterações são temporárias, sem
-              integração com suas contas.
+              {dataMode === "demo"
+                ? "Ambiente de demonstração. Os dados são sintéticos e as alterações são temporárias, sem integração com suas contas."
+                : "Consulta de dados Google em memória nesta aba. Modo somente leitura, sem alterações em planilhas ou calendários."}
             </span>
           </div>
           {notice && (
@@ -577,7 +602,7 @@ export function FinanceApp() {
                             </span>
                           </td>
                           <td>
-                            {state === "pending" || state === "overdue" ? (
+                            {dataMode === "demo" && (state === "pending" || state === "overdue") ? (
                               <button className="small-action" onClick={() => markPaid(b.id)}>
                                 Marcar paga (demo)
                               </button>
@@ -739,13 +764,7 @@ export function FinanceApp() {
                     <p>Ambiente público e seguro</p>
                   </div>
                 </div>
-                <div className="settings-row">
-                  <span>
-                    <strong>Google Sheets</strong>
-                    <small>Leitura real requer OAuth e autorização</small>
-                  </span>
-                  <span className="status status-pending">Não conectado</span>
-                </div>
+                <GoogleConnector onLoad={showReadOnlyWorkbook} onDisconnect={restoreDemo} />
                 <div className="settings-row">
                   <span>
                     <strong>Google Calendar</strong>
@@ -756,38 +775,33 @@ export function FinanceApp() {
                 <div className="settings-row">
                   <span>
                     <strong>Modo demonstrativo</strong>
-                    <small>Somente dados fictícios nesta sessão</small>
+                    <small>{dataMode === "demo" ? "Dados fictícios nesta sessão" : "Desligado durante a leitura Google"}</small>
                   </span>
-                  <span className="status status-paid">Ativo</span>
+                  <span className={"status " + (dataMode === "demo" ? "status-paid" : "status-pending")}>{dataMode === "demo" ? "Ativo" : "Inativo"}</span>
                 </div>
               </section>
               <section className="panel">
                 <div className="panel-heading">
                   <div>
                     <h2>Privacidade</h2>
-                    <p>Sem acesso aos seus dados reais</p>
+                    <p>Isolamento de dados e sessão</p>
                   </div>
                 </div>
                 <p className="settings-copy">
-                  Nenhuma alteração é enviada ao Google. Não são armazenados tokens, credenciais ou
-                  dados bancários neste modo. O cache offline contém apenas recursos públicos de
-                  interface.
+                  Nenhuma alteração é enviada ao Google. Quando configurada, a sessão fica no servidor
+                  e a consulta é somente leitura. O cache offline contém apenas recursos públicos de
+                  interface. Dados carregados não são mantidos no armazenamento do navegador.
                 </p>
                 <button
                   className="secondary-action"
-                  onClick={() => {
-                    setExpenses(demoSnapshot.expenses);
-                    setBills(demoSnapshot.bills);
-                    setBudgets(demoSnapshot.budgets);
-                    setNotice("Demonstração restaurada.");
-                  }}
+                  onClick={restoreDemo}
                 >
                   <RefreshCcw size={17} /> Restaurar demonstração
                 </button>
               </section>
             </div>
           )}
-          <footer>Personal Finance Hub · Open source · Dados demonstrativos · BRL</footer>
+          <footer>Personal Finance Hub · Open source · {dataMode === "demo" ? "Dados demonstrativos" : "Google somente leitura"} · BRL</footer>
         </main>
       </div>
       {showForm && (

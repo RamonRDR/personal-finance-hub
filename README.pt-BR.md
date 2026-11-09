@@ -23,7 +23,8 @@ Node.js 22+ e npm: `npm ci`, `npm run dev` e
 `npm run typecheck`, `npm run build` e `npm run test:e2e`.
 Nenhuma credencial é necessária para o modo demonstração.
 
-Consulte `docs/google-setup.md` para ativação privada,
+Consulte `docs/google-setup.md` para preparar uma validação privada e
+`npm run test:google` para testar as integrações simuladas sem credenciais,
 `docs/security.md` para segurança, `docs/sheets-mapping.md`
 para a estrutura saneada da planilha e `docs/release-checklist.md`
 para as pendências.

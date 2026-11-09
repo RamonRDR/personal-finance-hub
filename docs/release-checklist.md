@@ -18,7 +18,9 @@ This is a staged project, not a complete production finance tool.
 
 ## Still pending before live use
 
+- [x] Document the private Google Cloud/Redis staging steps and a credential-free integration test plan
 - [ ] Provision private Google Cloud OAuth test credentials, restricted identity and encrypted session backend
+- [x] Mock-test OAuth callback, owner authorization and read-only Google Sheets response mapping
 - [ ] Validate the OAuth callback, read-only scopes, real workbook access and response mapping with consent
 
 - [x] Implement Google OAuth login/logout with PKCE and owner-only identity checks (not yet activated)

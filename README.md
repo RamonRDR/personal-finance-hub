@@ -32,7 +32,9 @@ Requires Node.js 22+ and npm. Run `npm ci`, `npm run dev`, then open
 
 ## Private Google integration
 
-See [configuration](docs/google-setup.md) and [security gates](docs/security.md).
+See [private staging steps](docs/google-setup.md) and [security gates](docs/security.md).
+The Google contract tests run with `npm run test:google` using synthetic fixtures
+and do not request real credentials.
 A separate Google Cloud OAuth client, HTTPS origin, owner allowlist and
 encrypted Redis session service are needed for test activation. Never publish
 financial identifiers, spreadsheet rows, credentials or secrets to GitHub.

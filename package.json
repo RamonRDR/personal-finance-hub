@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:pwa": "node scripts/check-pwa.mjs"
+    "test:pwa": "node scripts/check-pwa.mjs",
+    "test:google": "vitest run src/lib/google src/app/api/auth src/app/api/finance/snapshot/route.test.ts"
   },
   "dependencies": {
     "next": "^16.0.0",

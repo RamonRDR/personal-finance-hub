@@ -62,7 +62,10 @@ export function GoogleConnector({
       const failed = result.failedTabs?.length ?? 0;
       if (result.complete !== true || warnings.length || failed) {
         setMessage(
-          "Leitura incompleta (" + warnings.length + " avisos, " + failed +
+          "Leitura incompleta (" +
+            warnings.length +
+            " avisos, " +
+            failed +
             " falhas de abas). A importação foi bloqueada para evitar totais incorretos.",
         );
         return;

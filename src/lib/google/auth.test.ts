@@ -110,7 +110,9 @@ describe("Google token exchange scope verification", () => {
   it("accepts the explicitly granted read-only Sheets scope", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets.readonly")),
+      vi.fn(async () =>
+        scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets.readonly"),
+      ),
     );
     const result = await exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce-verifier");
     expect(result.accessToken).toBe("synthetic-access");
@@ -118,13 +120,18 @@ describe("Google token exchange scope verification", () => {
   });
 
   it("rejects an omitted or reduced Sheets grant", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => scopedResponse("openid email")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => scopedResponse("openid email")),
+    );
     await expect(exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce")).rejects.toThrow(
       "read-only Sheets session",
     );
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets")),
+      vi.fn(async () =>
+        scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets"),
+      ),
     );
     await expect(exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce")).rejects.toThrow();
   });
@@ -134,7 +141,10 @@ describe("Google token exchange scope verification", () => {
       ...session(),
       accessExpiresAt: Date.now() - 1000,
     });
-    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: false, status: 400 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 400 })),
+    );
     expect(await authorizedGoogleToken(request, config)).toBeNull();
     expect(revokeSession).toHaveBeenCalledWith("synthetic-browser-handle", config);
   });

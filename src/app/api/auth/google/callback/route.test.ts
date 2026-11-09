@@ -32,7 +32,8 @@ const config = {
 
 const callback = (state: string, flowCookie?: string) =>
   new NextRequest(
-    "https://finance.example/api/auth/google/callback?state=" + encodeURIComponent(state) +
+    "https://finance.example/api/auth/google/callback?state=" +
+      encodeURIComponent(state) +
       "&code=synthetic-code",
     { headers: flowCookie ? { Cookie: "pfh_google_flow=" + flowCookie } : undefined },
   );

@@ -7,10 +7,13 @@ afterEach(() => vi.unstubAllGlobals());
 describe("Google Sheets read-only HTTP boundary", () => {
   it("requests only authorized GET calls with no cache and no writes", async () => {
     const calls: Array<{ url: string; init: RequestInit }> = [];
-    vi.stubGlobal("fetch", vi.fn(async (url: string, init: RequestInit) => {
-      calls.push({ url, init });
-      return { ok: true, json: async () => ({ values: [["Demo"]] }) };
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: RequestInit) => {
+        calls.push({ url, init });
+        return { ok: true, json: async () => ({ values: [["Demo"]] }) };
+      }),
+    );
     const workbookId = "syntheticWorkbookIdentifierABC123";
     await readSpreadsheetMetadata(workbookId, "synthetic-token");
     await readSpreadsheetRange(workbookId, "Novembro 2026", 1, 1000, "synthetic-token");
@@ -35,7 +38,13 @@ describe("Google Sheets read-only HTTP boundary", () => {
       readSpreadsheetRange("syntheticWorkbookIdentifierABC123", "Bad'!A1", 1, 2, "synthetic-token"),
     ).rejects.toThrow();
     await expect(
-      readSpreadsheetRange("syntheticWorkbookIdentifierABC123", "Novembro 2026", 2, 1002, "synthetic-token"),
+      readSpreadsheetRange(
+        "syntheticWorkbookIdentifierABC123",
+        "Novembro 2026",
+        2,
+        1002,
+        "synthetic-token",
+      ),
     ).rejects.toThrow();
     await expect(
       readSpreadsheetMetadata("syntheticWorkbookIdentifierABC123", ""),
@@ -44,7 +53,10 @@ describe("Google Sheets read-only HTTP boundary", () => {
   });
 
   it("fails safely on permission denial without returning the provider response body", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: false, status: 403 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false, status: 403 })),
+    );
     await expect(
       readSpreadsheetMetadata("syntheticWorkbookIdentifierABC123", "synthetic-token"),
     ).rejects.toThrow("Google Sheets read failed (403)");

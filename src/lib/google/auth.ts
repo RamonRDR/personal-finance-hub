@@ -102,7 +102,8 @@ export async function authorizedGoogleToken(
     !Number.isInteger(next.expires_in) ||
     next.expires_in! <= 0 ||
     (next.scope !== undefined && !hasReadOnlySheetsPermission(next.scope))
-  ) return null;
+  )
+    return null;
   await saveSession(
     handle!,
     {

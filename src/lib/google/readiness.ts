@@ -14,7 +14,8 @@ export function workbookReadiness(workbook: ReadOnlyWorkbookStatus): {
   // Financial totals must never be presented as verified when any source is
   // absent, malformed, unavailable, or possibly duplicated.
   return {
-    complete: workbook.readOnly === true &&
+    complete:
+      workbook.readOnly === true &&
       workbook.warnings.length === 0 &&
       workbook.failedTabs.length === 0,
     warningCount: workbook.warnings.length,

@@ -44,17 +44,17 @@ These tests do not prove a live connection.
 
 ## Required server-side variables
 
-| Variable | Purpose |
-| --- | --- |
-| `GOOGLE_INTEGRATION_ENABLED` | Set `true` only in approved private staging |
-| `APP_ORIGIN` | Exact HTTPS origin of the private test host |
-| `GOOGLE_CLIENT_ID` | OAuth Web application client ID |
-| `GOOGLE_CLIENT_SECRET` | OAuth Web application client secret |
-| `ALLOWED_GOOGLE_EMAIL` | Only verified account allowed to sign in |
-| `FINANCE_SPREADSHEET_ID` | **Synthetic test workbook** ID, never the household workbook during initial tests |
-| `SESSION_ENCRYPTION_KEY` | Private base64-encoded 32-byte AES key |
-| `UPSTASH_REDIS_REST_URL` | HTTPS endpoint for isolated Redis database |
-| `UPSTASH_REDIS_REST_TOKEN` | Server-only Redis REST token |
+| Variable                     | Purpose                                                                           |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| `GOOGLE_INTEGRATION_ENABLED` | Set `true` only in approved private staging                                       |
+| `APP_ORIGIN`                 | Exact HTTPS origin of the private test host                                       |
+| `GOOGLE_CLIENT_ID`           | OAuth Web application client ID                                                   |
+| `GOOGLE_CLIENT_SECRET`       | OAuth Web application client secret                                               |
+| `ALLOWED_GOOGLE_EMAIL`       | Only verified account allowed to sign in                                          |
+| `FINANCE_SPREADSHEET_ID`     | **Synthetic test workbook** ID, never the household workbook during initial tests |
+| `SESSION_ENCRYPTION_KEY`     | Private base64-encoded 32-byte AES key                                            |
+| `UPSTASH_REDIS_REST_URL`     | HTTPS endpoint for isolated Redis database                                        |
+| `UPSTASH_REDIS_REST_TOKEN`   | Server-only Redis REST token                                                      |
 
 Do not send these secrets in chat, PR comments, issues or screenshots.
 Keep them in the private host's **encrypted environment settings**.

@@ -33,7 +33,7 @@ describe("Calendar API transport (synthetic mocked responses only)", () => {
   });
 
   it("uses a deterministic create ID and reports an already-existing event as conflict", async () => {
-    const fake = vi.fn(async () => ({ status: 409, ok: false }));
+    const fake = vi.fn(async (_url: string, _options: RequestInit) => ({ status: 409, ok: false }));
     vi.stubGlobal("fetch", fake);
     expect(await applyCalendarChange(creation, "fake-token", gate)).toEqual({
       status: "conflict",
@@ -55,7 +55,7 @@ describe("Calendar API transport (synthetic mocked responses only)", () => {
       privateProperties: { app: "personal-finance-hub", billId: bill.stableId },
     };
     const [update] = planCalendarSynchronization([bill], [existing], "demo-calendar");
-    const fake = vi.fn(async () => ({ status: 412, ok: false }));
+    const fake = vi.fn(async (_url: string, _options: RequestInit) => ({ status: 412, ok: false }));
     vi.stubGlobal("fetch", fake);
     expect(await applyCalendarChange(update, "fake-token", gate)).toEqual({
       status: "conflict",

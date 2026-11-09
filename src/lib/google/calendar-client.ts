@@ -1,5 +1,5 @@
 import "server-only";
-import type { CalendarSyncOperation } from "../finance/calendar-sync";
+import { calendarEventId, type CalendarSyncOperation } from "../finance/calendar-sync";
 
 // This module has no public route. Real Calendar write mode is disabled pending
 // specific consent, a dedicated calendar and a separately granted OAuth scope.
@@ -28,7 +28,12 @@ export async function applyCalendarChange(
   if (operation.action === "conflict") {
     return { status: "conflict", eventId: operation.eventId };
   }
-  if (operation.eventId !== operation.payload.id) {
+  if (
+    operation.eventId !== operation.payload.id ||
+    operation.eventId !== calendarEventId(operation.billId) ||
+    operation.payload.extendedProperties.private.billId !== operation.billId ||
+    operation.payload.extendedProperties.private.app !== "personal-finance-hub"
+  ) {
     throw new Error("Calendar event identity mismatch");
   }
   if (operation.action === "update" && !operation.expectedEtag) {

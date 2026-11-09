@@ -32,3 +32,14 @@ There are no Calendar API write calls today.
 PWA caches only public offline assets and immutable static scripts. It
 deliberately does not cache APIs, HTML with identity context, OAuth callbacks
 or financial data. Physical device tests remain mandatory for release.
+
+## Calendar integration boundary
+
+The domain planner at `src/lib/finance/calendar-sync.ts` requires durable
+UUIDs instead of transient sheet row numbers, deterministic remote event IDs
+and a dedicated (non-primary) calendar. It proposes create/update/no-op or
+conflict actions without deleting unrelated events. The separate server
+Calendar transport enforces an explicit approval gate and uses ETags to avoid
+silent concurrent updates. Tests run against mocked network responses only.
+No API route calls the transport; the current Google OAuth does not request a
+Calendar write scope, so real synchronization is not enabled.

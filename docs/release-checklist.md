@@ -28,7 +28,8 @@ This is a staged project, not a complete production finance tool.
 - [ ] Source field mapping approval, immutable IDs and write conflict strategy
 - [ ] Backup + preview + explicitly approved real write mode
 - [ ] Secure audit history and idempotent paid/expense operations
-- [ ] Calendar API synchronization with opt-in, stable IDs and a dedicated calendar
+- [x] Calendar sync planner and mock transport with stable UUIDs, ETags, dedicated-calendar guard and duplicate-event protection
+- [ ] Owner-authorized Calendar OAuth scope, persistent event links and protected live sync
 - [ ] Real Google error, permission, quota and renewal testing
 - [ ] PWA install check over HTTPS on real iOS and Android devices
 - [ ] Production privacy review and controlled deployment, only with authorization

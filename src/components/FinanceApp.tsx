@@ -208,9 +208,13 @@ export function FinanceApp() {
     setDataMode("google-read-only");
     setShowForm(false);
     setView("Dashboard");
-    setNotice(warnings.length
-      ? "Leitura concluída com " + warnings.length + " avisos de mapeamento. Confira a origem antes de usar os totais."
-      : "Dados carregados somente para leitura. Nenhum lançamento ou pagamento será gravado.");
+    setNotice(
+      warnings.length
+        ? "Leitura concluída com " +
+            warnings.length +
+            " avisos de mapeamento. Confira a origem antes de usar os totais."
+        : "Dados carregados somente para leitura. Nenhum lançamento ou pagamento será gravado.",
+    );
   }
   function goto(next: View) {
     setView(next);
@@ -274,7 +278,8 @@ export function FinanceApp() {
           </div>
           <div className="topbar-right">
             <span className="demo-tag">
-              <span className="demo-dot" /> {dataMode === "demo" ? "MODO DEMONSTRAÇÃO" : "GOOGLE SHEETS · SOMENTE LEITURA"}
+              <span className="demo-dot" />{" "}
+              {dataMode === "demo" ? "MODO DEMONSTRAÇÃO" : "GOOGLE SHEETS · SOMENTE LEITURA"}
             </span>
             <span className="avatar">FH</span>
           </div>
@@ -309,7 +314,11 @@ export function FinanceApp() {
                   ))}
                 </select>
               </label>
-              <button className="button-primary" onClick={() => setShowForm(true)} disabled={dataMode !== "demo"}>
+              <button
+                className="button-primary"
+                onClick={() => setShowForm(true)}
+                disabled={dataMode !== "demo"}
+              >
                 <Plus size={18} /> Nova despesa
               </button>
             </div>
@@ -775,9 +784,17 @@ export function FinanceApp() {
                 <div className="settings-row">
                   <span>
                     <strong>Modo demonstrativo</strong>
-                    <small>{dataMode === "demo" ? "Dados fictícios nesta sessão" : "Desligado durante a leitura Google"}</small>
+                    <small>
+                      {dataMode === "demo"
+                        ? "Dados fictícios nesta sessão"
+                        : "Desligado durante a leitura Google"}
+                    </small>
                   </span>
-                  <span className={"status " + (dataMode === "demo" ? "status-paid" : "status-pending")}>{dataMode === "demo" ? "Ativo" : "Inativo"}</span>
+                  <span
+                    className={"status " + (dataMode === "demo" ? "status-paid" : "status-pending")}
+                  >
+                    {dataMode === "demo" ? "Ativo" : "Inativo"}
+                  </span>
                 </div>
               </section>
               <section className="panel">
@@ -788,20 +805,21 @@ export function FinanceApp() {
                   </div>
                 </div>
                 <p className="settings-copy">
-                  Nenhuma alteração é enviada ao Google. Quando configurada, a sessão fica no servidor
-                  e a consulta é somente leitura. O cache offline contém apenas recursos públicos de
-                  interface. Dados carregados não são mantidos no armazenamento do navegador.
+                  Nenhuma alteração é enviada ao Google. Quando configurada, a sessão fica no
+                  servidor e a consulta é somente leitura. O cache offline contém apenas recursos
+                  públicos de interface. Dados carregados não são mantidos no armazenamento do
+                  navegador.
                 </p>
-                <button
-                  className="secondary-action"
-                  onClick={restoreDemo}
-                >
+                <button className="secondary-action" onClick={restoreDemo}>
                   <RefreshCcw size={17} /> Restaurar demonstração
                 </button>
               </section>
             </div>
           )}
-          <footer>Personal Finance Hub · Open source · {dataMode === "demo" ? "Dados demonstrativos" : "Google somente leitura"} · BRL</footer>
+          <footer>
+            Personal Finance Hub · Open source ·{" "}
+            {dataMode === "demo" ? "Dados demonstrativos" : "Google somente leitura"} · BRL
+          </footer>
         </main>
       </div>
       {showForm && (

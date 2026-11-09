@@ -8,13 +8,17 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     const config = googleConfig();
-    if (!config) return new Response("Integration disabled", { status: 404, headers: PRIVATE_HEADERS });
+    if (!config)
+      return new Response("Integration disabled", { status: 404, headers: PRIVATE_HEADERS });
     const token = await authorizedGoogleToken(request, config);
     if (!token) {
-      return NextResponse.json({ error: "Google login required" }, {
-        status: 401,
-        headers: PRIVATE_HEADERS,
-      });
+      return NextResponse.json(
+        { error: "Google login required" },
+        {
+          status: 401,
+          headers: PRIVATE_HEADERS,
+        },
+      );
     }
     const workbook = await loadReadOnlyWorkbook(config.spreadsheetId, token);
     return NextResponse.json(

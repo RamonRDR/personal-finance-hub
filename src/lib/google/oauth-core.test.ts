@@ -15,7 +15,9 @@ describe("Google OAuth safety", () => {
       state: flow.state,
       verifier: flow.verifier,
     });
-    const url = new URL(buildGoogleAuthorizationUrl("demo-client", "https://example.com/callback", flow));
+    const url = new URL(
+      buildGoogleAuthorizationUrl("demo-client", "https://example.com/callback", flow),
+    );
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
     expect(url.searchParams.get("scope")).toContain("spreadsheets.readonly");
     expect(url.searchParams.get("scope")).not.toContain("spreadsheets ");
@@ -35,7 +37,9 @@ describe("Google OAuth safety", () => {
       email: identity.email,
       subject: identity.sub,
     });
-    expect(approvedGoogleIdentity({ ...identity, email_verified: false }, identity.email)).toBeNull();
+    expect(
+      approvedGoogleIdentity({ ...identity, email_verified: false }, identity.email),
+    ).toBeNull();
     expect(approvedGoogleIdentity(identity, "other@example.com")).toBeNull();
     expect(approvedGoogleIdentity({ ...identity, sub: "" }, identity.email)).toBeNull();
   });

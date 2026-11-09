@@ -19,7 +19,10 @@ export function encryptSession(session: StoredSession, key: Buffer): string {
   if (key.length !== 32) throw new Error("Invalid encryption key length");
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
-  const data = Buffer.concat([cipher.update(JSON.stringify(storedSessionSchema.parse(session))), cipher.final()]);
+  const data = Buffer.concat([
+    cipher.update(JSON.stringify(storedSessionSchema.parse(session))),
+    cipher.final(),
+  ]);
   return [iv, cipher.getAuthTag(), data].map((part) => part.toString("base64url")).join(".");
 }
 

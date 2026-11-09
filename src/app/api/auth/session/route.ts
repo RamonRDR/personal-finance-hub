@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
   try {
     const config = googleConfig();
     if (!config) {
-      return NextResponse.json({ configured: false, connected: false }, { headers: PRIVATE_HEADERS });
+      return NextResponse.json(
+        { configured: false, connected: false },
+        { headers: PRIVATE_HEADERS },
+      );
     }
     const session = await findSession(request.cookies.get(SESSION_COOKIE)?.value, config);
     return NextResponse.json(

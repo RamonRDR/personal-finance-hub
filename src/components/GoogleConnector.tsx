@@ -126,7 +126,11 @@ export function GoogleConnector({
           <small>Integração desativada. A demonstração não precisa de credenciais.</small>
         )}
       </div>
-      {message && <p role="status" className="settings-copy">{message}</p>}
+      {message && (
+        <p role="status" className="settings-copy">
+          {message}
+        </p>
+      )}
     </div>
   );
 }

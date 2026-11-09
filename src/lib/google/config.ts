@@ -28,14 +28,16 @@ export function googleConfig(): GoogleConfig | null {
     throw new Error("Google integration is missing required server configuration");
   }
   const origin = new URL(process.env.APP_ORIGIN!);
-  const localDev = process.env.NODE_ENV !== "production" && origin.origin === "http://localhost:3000";
-  if (
-    origin.toString() !== origin.origin + "/" ||
-    (!localDev && origin.protocol !== "https:")
-  )
+  const localDev =
+    process.env.NODE_ENV !== "production" && origin.origin === "http://localhost:3000";
+  if (origin.toString() !== origin.origin + "/" || (!localDev && origin.protocol !== "https:"))
     throw new Error("APP_ORIGIN must be an HTTPS origin");
   const redis = new URL(process.env.UPSTASH_REDIS_REST_URL!);
-  if (redis.protocol !== "https:" || !redis.hostname.endsWith(".upstash.io") || redis.pathname !== "/") {
+  if (
+    redis.protocol !== "https:" ||
+    !redis.hostname.endsWith(".upstash.io") ||
+    redis.pathname !== "/"
+  ) {
     throw new Error("Invalid session storage endpoint");
   }
   const encryptionKey = Buffer.from(process.env.SESSION_ENCRYPTION_KEY!, "base64");

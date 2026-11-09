@@ -20,7 +20,11 @@ export function createOAuthFlow(secret: Buffer, now = Date.now()) {
   return { ...flow, challenge, cookie: payload + "." + signature(payload, secret) };
 }
 
-export function verifyOAuthFlow(cookie: string | undefined, secret: Buffer, now = Date.now()): Flow | null {
+export function verifyOAuthFlow(
+  cookie: string | undefined,
+  secret: Buffer,
+  now = Date.now(),
+): Flow | null {
   if (!cookie || cookie.length > 2048) return null;
   const [payload, mac, extra] = cookie.split(".");
   if (!payload || !mac || extra) return null;

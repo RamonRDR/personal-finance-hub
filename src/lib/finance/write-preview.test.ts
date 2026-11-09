@@ -104,9 +104,10 @@ describe("safe financial change preview", () => {
       paidCents: 17400,
       paidAt: "2026-11-09",
     });
-    expect(
-      previewFinanceChange(result.proposedSnapshot, command, context),
-    ).toEqual({ status: "blocked", reason: "conflict" });
+    expect(previewFinanceChange(result.proposedSnapshot, command, context)).toEqual({
+      status: "blocked",
+      reason: "conflict",
+    });
   });
 
   it("flags a likely duplicate and requires separate acknowledgment", () => {
@@ -123,14 +124,21 @@ describe("safe financial change preview", () => {
       reason: "possible-duplicate",
     });
     expect(
-      previewFinanceChange(first.proposedSnapshot, { ...next, duplicateAcknowledged: true }, context)
-        .status,
+      previewFinanceChange(
+        first.proposedSnapshot,
+        { ...next, duplicateAcknowledged: true },
+        context,
+      ).status,
     ).toBe("ready");
   });
 
   it("rejects unsupported amounts, dates and missing bill identifiers", () => {
     expect(
-      previewFinanceChange(state, { ...add, expense: { ...add.expense, amountCents: NaN } }, context),
+      previewFinanceChange(
+        state,
+        { ...add, expense: { ...add.expense, amountCents: NaN } },
+        context,
+      ),
     ).toEqual({ status: "blocked", reason: "invalid" });
     expect(
       previewFinanceChange(

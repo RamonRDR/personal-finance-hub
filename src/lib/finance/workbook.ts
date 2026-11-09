@@ -1,4 +1,10 @@
-import { deduplicateEntries, detectPotentialDuplicates, importBills, importExpenses, SHEETS } from "./import";
+import {
+  deduplicateEntries,
+  detectPotentialDuplicates,
+  importBills,
+  importExpenses,
+  SHEETS,
+} from "./import";
 import type { ImportWarning, Snapshot } from "./types";
 
 export const EXPECTED_HEADERS: Record<string, { row: number; sentinels: Array<[number, string]> }> =

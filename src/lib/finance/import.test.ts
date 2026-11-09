@@ -33,9 +33,36 @@ describe("read-only Sheets normalization", () => {
       "Cartões - Parceladas",
       rowsAfterHeader(
         10,
-        ["15/10/2026", "Cartão Demo", "Notebook Fictício", "Compras", "Pessoa A", "1/3", "10/11/2026", "100,00"],
-        ["15/10/2026", "Cartão Demo", "Notebook Fictício", "Compras", "Pessoa A", "2/3", "10/12/2026", "100,00"],
-        ["15/10/2026", "Cartão Demo", "Notebook Fictício", "Compras", "Pessoa A", "3/3", "", "100,00"],
+        [
+          "15/10/2026",
+          "Cartão Demo",
+          "Notebook Fictício",
+          "Compras",
+          "Pessoa A",
+          "1/3",
+          "10/11/2026",
+          "100,00",
+        ],
+        [
+          "15/10/2026",
+          "Cartão Demo",
+          "Notebook Fictício",
+          "Compras",
+          "Pessoa A",
+          "2/3",
+          "10/12/2026",
+          "100,00",
+        ],
+        [
+          "15/10/2026",
+          "Cartão Demo",
+          "Notebook Fictício",
+          "Compras",
+          "Pessoa A",
+          "3/3",
+          "",
+          "100,00",
+        ],
       ),
     );
     expect(result.records.map((expense) => expense.date)).toEqual(["2026-11-10", "2026-12-10"]);
@@ -52,17 +79,20 @@ describe("read-only Sheets normalization", () => {
   it("preserves one-off purchases on purchase date and external expenses separately", () => {
     const card = importExpenses(
       "Cartões - Avulsas",
-      rowsAfterHeader(
-        6,
-        ["01/10/2026", "Cartão Demo", "Loja Teste", "Compras", "Pessoa A", "Crédito", "10/11/2026", "55,00"],
-      ),
+      rowsAfterHeader(6, [
+        "01/10/2026",
+        "Cartão Demo",
+        "Loja Teste",
+        "Compras",
+        "Pessoa A",
+        "Crédito",
+        "10/11/2026",
+        "55,00",
+      ]),
     );
     const external = importExpenses(
       "Despesas Externas",
-      rowsAfterHeader(
-        6,
-        ["05/11/2026", "", "Empresa", "Fornecedor Fictício", "Pessoa B", "90,00"],
-      ),
+      rowsAfterHeader(6, ["05/11/2026", "", "Empresa", "Fornecedor Fictício", "Pessoa B", "90,00"]),
     );
     expect(card.records[0]).toMatchObject({
       date: "2026-10-01",
@@ -84,15 +114,24 @@ describe("read-only Sheets normalization", () => {
     const warnings = detectPotentialDuplicates(result.records);
     expect(result.records).toHaveLength(2);
     expect(deduplicateEntries(result.records)).toHaveLength(2);
-    expect(warnings).toEqual([
-      { tab: "Novembro 2026", row: 8, code: "possible-duplicate" },
-    ]);
+    expect(warnings).toEqual([{ tab: "Novembro 2026", row: 8, code: "possible-duplicate" }]);
   });
 
   it("reads card invoice status separately, never as consumption", () => {
     const result = importBills(
       "Faturas dos Cartões",
-      rowsAfterHeader(6, ["11/2026", "Cartão Demo", "10/11/2026", 0, 80, 80, 80, 80, "09/11/2026", "Pago"]),
+      rowsAfterHeader(6, [
+        "11/2026",
+        "Cartão Demo",
+        "10/11/2026",
+        0,
+        80,
+        80,
+        80,
+        80,
+        "09/11/2026",
+        "Pago",
+      ]),
     );
     expect(result.records[0].status).toBe("paid");
     expect(result.records[0].plannedCents).toBe(8000);
@@ -101,10 +140,17 @@ describe("read-only Sheets normalization", () => {
   it("preserves partial payments as pending instead of inventing settlement", () => {
     const result = importBills(
       "Contas Fixas e Vencimentos",
-      rowsAfterHeader(
-        6,
-        ["11/2026", "Conta Fictícia", "Casa", "10/11/2026", "", "100,00", "40,00", "", "Parcial"],
-      ),
+      rowsAfterHeader(6, [
+        "11/2026",
+        "Conta Fictícia",
+        "Casa",
+        "10/11/2026",
+        "",
+        "100,00",
+        "40,00",
+        "",
+        "Parcial",
+      ]),
     );
     expect(result.records[0]).toMatchObject({
       status: "pending",
@@ -118,7 +164,17 @@ describe("read-only Sheets normalization", () => {
       "Contas Fixas e Vencimentos",
       rowsAfterHeader(
         6,
-        ["11/2026", "Status inesperado", "Casa", "10/11/2026", "", "100,00", "", "", "FormulaError"],
+        [
+          "11/2026",
+          "Status inesperado",
+          "Casa",
+          "10/11/2026",
+          "",
+          "100,00",
+          "",
+          "",
+          "FormulaError",
+        ],
         ["11/2026", "Valor inválido", "Casa", "10/11/2026", "", "R$ ???", "", "", "Pendente"],
       ),
     );

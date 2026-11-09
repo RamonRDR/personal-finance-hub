@@ -19,7 +19,9 @@ function isSubtotal(description: string): boolean {
 }
 
 function statusFromSheet(value: unknown): Bill["status"] | null {
-  const text = String(value ?? "").trim().toLocaleLowerCase("pt-BR");
+  const text = String(value ?? "")
+    .trim()
+    .toLocaleLowerCase("pt-BR");
   if (/cancelad/.test(text)) return "cancelled";
   if (/\b(pag[oa]|quitad[oa]|liquidad[oa])\b/u.test(text)) return "paid";
   if (/pendente|abert[oa]|vencid[oa]|atrasad[oa]|a vencer|previst[oa]|parcial/.test(text))
@@ -117,8 +119,10 @@ export function importBills(
     const paidRaw = row[invoice ? 7 : 6];
     const plannedCents = parseMoneyCents(plannedRaw);
     const paidCents = parseMoneyCents(paidRaw);
-    if ((hasValue(plannedRaw) && plannedCents === null) ||
-        (hasValue(paidRaw) && paidCents === null)) {
+    if (
+      (hasValue(plannedRaw) && plannedCents === null) ||
+      (hasValue(paidRaw) && paidCents === null)
+    ) {
       warnings.push({ tab, row: index + 1, code: "invalid-money" });
       continue;
     }

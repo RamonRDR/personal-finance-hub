@@ -33,7 +33,11 @@ import {
 } from "@/lib/finance/analytics";
 import { calendarPreview } from "@/lib/finance/calendar-plan";
 import type { Bill, Budget, Expense, Snapshot, ImportWarning } from "@/lib/finance/types";
-import { previewFinanceChange, type FinanceCommand, type WritePreview } from "@/lib/finance/write-preview";
+import {
+  previewFinanceChange,
+  type FinanceCommand,
+  type WritePreview,
+} from "@/lib/finance/write-preview";
 
 type View =
   | "Dashboard"
@@ -104,9 +108,15 @@ export function FinanceApp() {
   const [view, setView] = useState<View>("Dashboard");
   const [demoRevision, setDemoRevision] = useState(0);
   const processedOperationIds = useRef(new Set<string>());
-  const [pendingChange, setPendingChange] = useState<Extract<WritePreview, { status: "ready" }> | null>(null);
+  const [pendingChange, setPendingChange] = useState<Extract<
+    WritePreview,
+    { status: "ready" }
+  > | null>(null);
   const [pendingKind, setPendingKind] = useState<"expense" | "payment" | null>(null);
-  const [duplicateCommand, setDuplicateCommand] = useState<Extract<FinanceCommand, { type: "add-expense" }> | null>(null);
+  const [duplicateCommand, setDuplicateCommand] = useState<Extract<
+    FinanceCommand,
+    { type: "add-expense" }
+  > | null>(null);
   const [dataMode, setDataMode] = useState<"demo" | "google-read-only">("demo");
   const [month, setMonth] = useState("2026-11");
   const [expenses, setExpenses] = useState<Expense[]>(demoSnapshot.expenses);
@@ -146,7 +156,10 @@ export function FinanceApp() {
     const result = previewFinanceChange(
       { expenses, bills, budgets, lastSyncedAt: null, mode: dataMode },
       command,
-      { currentRevision: "demo-" + demoRevision, processedOperationIds: processedOperationIds.current },
+      {
+        currentRevision: "demo-" + demoRevision,
+        processedOperationIds: processedOperationIds.current,
+      },
     );
     if (result.status === "blocked") {
       if (result.reason === "possible-duplicate" && command.type === "add-expense") {
@@ -405,13 +418,24 @@ export function FinanceApp() {
             <div role="status" className="notice">
               {notice}
               {duplicateCommand && dataMode === "demo" && (
-                <button onClick={() => {
-                  proposeDemoChange({ ...duplicateCommand, duplicateAcknowledged: true }, "expense");
-                }}>
+                <button
+                  onClick={() => {
+                    proposeDemoChange(
+                      { ...duplicateCommand, duplicateAcknowledged: true },
+                      "expense",
+                    );
+                  }}
+                >
                   Revisar mesmo assim
                 </button>
               )}
-              <button onClick={() => { setNotice(""); setDuplicateCommand(null); }} aria-label="Fechar aviso">
+              <button
+                onClick={() => {
+                  setNotice("");
+                  setDuplicateCommand(null);
+                }}
+                aria-label="Fechar aviso"
+              >
                 <X size={16} />
               </button>
             </div>
@@ -976,11 +1000,25 @@ export function FinanceApp() {
                 <X size={20} />
               </button>
             </div>
-            <p>Confira os campos antes de confirmar. Esta operação é fictícia e não será enviada ao Google.</p>
+            <p>
+              Confira os campos antes de confirmar. Esta operação é fictícia e não será enviada ao
+              Google.
+            </p>
             <ul className="preview-change-list">
               {pendingChange.changes.map((change) => (
                 <li key={change.entity + change.id + change.field}>
-                  <strong>{change.field === "record" ? "Descrição" : change.field === "amountCents" ? "Valor" : change.field === "paidCents" ? "Valor pago" : change.field === "paidAt" ? "Data do pagamento" : "Situação"}: </strong>
+                  <strong>
+                    {change.field === "record"
+                      ? "Descrição"
+                      : change.field === "amountCents"
+                        ? "Valor"
+                        : change.field === "paidCents"
+                          ? "Valor pago"
+                          : change.field === "paidAt"
+                            ? "Data do pagamento"
+                            : "Situação"}
+                    :{" "}
+                  </strong>
                   <span>
                     {change.field === "amountCents" || change.field === "paidCents"
                       ? formatMoney(Number(change.after))
@@ -997,14 +1035,17 @@ export function FinanceApp() {
               <button type="button" className="button-primary" onClick={approveDemoChange}>
                 Confirmar alteração da demo
               </button>
-              <button type="button" className="secondary-action" onClick={() => setPendingChange(null)}>
+              <button
+                type="button"
+                className="secondary-action"
+                onClick={() => setPendingChange(null)}
+              >
                 Cancelar
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

@@ -33,11 +33,12 @@ describe("OAuth initiation", () => {
     expect(google.searchParams.get("scope")).toContain("spreadsheets.readonly");
     expect(google.searchParams.get("scope")).not.toContain("/auth/spreadsheets ");
     expect(google.searchParams.get("code_challenge_method")).toBe("S256");
-    const cookie = response.cookies.get("pfh_google_flow");
-    expect(cookie?.httpOnly).toBe(true);
-    expect(cookie?.sameSite).toBe("lax");
-    expect(cookie?.secure).toBe(true);
-    const flow = verifyOAuthFlow(cookie?.value, config.encryptionKey);
+    const cookieHeader = response.headers.get("set-cookie") ?? "";
+    expect(cookieHeader).toMatch(/HttpOnly/i);
+    expect(cookieHeader).toMatch(/SameSite=Lax/i);
+    expect(cookieHeader).toMatch(/Secure/i);
+    const cookieValue = /pfh_google_flow=([^;]+)/.exec(cookieHeader)?.[1];
+    const flow = verifyOAuthFlow(cookieValue, config.encryptionKey);
     expect(flow?.state).toBe(google.searchParams.get("state"));
     expect(response.headers.get("Cache-Control")).toContain("no-store");
   });

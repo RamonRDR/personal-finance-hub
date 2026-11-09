@@ -60,8 +60,9 @@ describe("Google OAuth authorization callback", () => {
     const response = await GET(callback(flow.state, flow.cookie));
     expect(response.status).toBe(307);
     expect(response.headers.get("Location")).toBe("https://finance.example/?google=connected");
-    expect(response.cookies.get("pfh_session")?.value).toBe("x".repeat(43));
-    expect(response.cookies.get("pfh_google_flow")?.value).toBe("");
+    const cookies = response.headers.get("set-cookie") ?? "";
+    expect(cookies).toContain("pfh_session=" + "x".repeat(43));
+    expect(cookies).toContain("pfh_google_flow=");
     expect(saveSession).toHaveBeenCalledWith(
       "x".repeat(43),
       expect.objectContaining({

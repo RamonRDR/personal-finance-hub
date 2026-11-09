@@ -42,7 +42,7 @@ describe("Calendar API transport (synthetic mocked responses only)", () => {
     const [url, options] = fake.mock.calls[0];
     expect(url).toContain("demo-calendar%40group.calendar.google.com");
     expect(options.method).toBe("POST");
-    expect(JSON.parse(options.body).id).toBe(creation.eventId);
+    expect(JSON.parse(String(options.body)).id).toBe(creation.eventId);
   });
 
   it("patches using If-Match and treats concurrent edits as conflicts", async () => {
@@ -63,6 +63,6 @@ describe("Calendar API transport (synthetic mocked responses only)", () => {
     });
     const [, options] = fake.mock.calls[0];
     expect(options.method).toBe("PATCH");
-    expect(options.headers["If-Match"]).toBe("test-etag");
+    expect(new Headers(options.headers).get("If-Match")).toBe("test-etag");
   });
 });

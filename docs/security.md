@@ -1,21 +1,38 @@
-# Security and release gates
+# Security and integration gates
 
-The app is an **isolated public synthetic demo**. All Google writes are disabled.
-A read-only Google API client exists but is not bound to a real OAuth session.
+This public app starts in **synthetic demo mode**. Optional private Google
+integration is explicitly disabled unless all server-only settings are
+provided. No Google writes or Calendar mutation endpoints exist.
 
-Before handling any live financial data:
+## Controls implemented in source
 
-1. Configure Google OAuth consent with minimum read-only Sheets scope.
-2. Restrict access to one approved Google identity.
-3. Add durable server-side encrypted token storage, expiry, revocation and CSRF protection.
-4. Add production throttling, error handling and log redaction.
-5. Validate row/column mapping and formulas against an isolated test spreadsheet.
-6. Back up the real spreadsheet, preview changes and obtain fresh owner consent.
-7. Introduce immutable IDs, idempotent operations and conflict detection before writing.
-8. Verify no duplicate reminders, then use a separately approved financial calendar.
-9. Test a real installed PWA via HTTPS on both iOS and Android.
-10. Preserve existing automations, reminders and sheets without modification.
+- OAuth authorization-code flow with PKCE S256, HMAC-signed 10-minute state
+  cookies, fixed redirect URI and exact verified owner email allowlist.
+- Minimum read-only Sheets permission plus `openid email`. No write scope.
+- Private session handle cookie (HttpOnly, SameSite=Lax, Secure on HTTPS,
+  host-only, path `/`). No refresh/access token in browser cookies.
+- Server-side Redis sessions with random opaque handles hashed for lookup,
+  AES-256-GCM encryption at rest, seven-day fixed expiry and explicit revocation.
+- Server-side token refresh; authenticated read-only Sheets endpoint.
+- Private no-store responses for identity and financial data; no sensitive
+  PWA offline caching. Logout requires a same-origin POST.
+- No Google write routes; mutations in demo mode are session-only simulations.
 
-Do not commit private spreadsheet IDs, transaction values, names,
-account/card numbers, credentials, access tokens, screenshots of live
-financial data or AI prompts containing user financial details.
+## Unverified and mandatory before live finance use
+
+- Configure a private Google Cloud app, owner identity, Redis and HTTPS origin.
+- Test OAuth consent, token refresh/revocation, error paths, rate limiting,
+  provider outages, scopes and real Google access on an isolated test sheet.
+- Review actual financial mapping. Missing/header-drifted tabs trigger
+  warnings; a partial result is not a trustworthy complete ledger.
+- Implement source-stable IDs, explicit diffs, backups, optimistic
+  concurrency, safe retry/idempotency and a verified audit trail before
+  allowing a Sheets write.
+- Add protected Calendar opt-in with a dedicated calendar, stable event IDs
+  and anti-duplication behavior; validate on a test calendar.
+- Validate PWA installation over HTTPS on real iOS/Android devices.
+- Perform privacy/security review before any owner-authorized deployment.
+
+No credential, private spreadsheet identifier, financial row, individual
+name or account number belongs in the public repository or GitHub Actions
+logs. This implementation is **not a claim that live integration works**.

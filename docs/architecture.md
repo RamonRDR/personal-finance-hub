@@ -1,31 +1,34 @@
 # Architecture
 
-Next.js App Router + TypeScript strict + responsive React interface.
-The finance domain is independent of Google spreadsheet layouts. Input
-boundaries are normalized by typed adapters into expenses, bills and budgets.
-Deterministic services calculate overdue status, monthly summaries, category
-breakdowns and Calendar dry-runs. All demo figures are fictional.
+Next.js 16 App Router + TypeScript strict + responsive React UI. Finance
+domain services are deterministic and independent of the spreadsheet layout.
+Public mode is an interactive synthetic fixture, with no account required.
 
-Read flow: future authorized Google session -> read-only Sheets API ->
-normalizer -> finance domain -> browser UI. Real Google integration is NOT
-activated or validated yet. Public demo uses only synthetic fixtures.
+## Optional read-only Google path
 
-Write flow (future, gated): authenticated actor -> validated command ->
-reviewable diff -> backup -> durable idempotency and revision checks ->
-narrow scoped Google mutation -> audit log. No write path currently exists.
+User click → Google OAuth authorization code + PKCE and signed state →
+verified allowed account → encrypted server-side Redis session → opaque
+HttpOnly cookie → owner-initiated private GET /api/finance/snapshot →
+server-only Sheets API read → header-validated normalizer → transient
+in-memory browser view. Real token and spreadsheet identifier never enter
+the browser. Logout revokes the server session; tokens refresh server-side.
 
-Calendar flow (future, gated): account due dates -> side-effect-free preview ->
-owner approval -> separate destination calendar -> durable event IDs ->
-confirmed sync. Today only the preview exists.
+This path is feature-gated and not yet configured or validated against live
+Google. Google scopes are openid, email and spreadsheets.readonly only.
+Failed or missing tabs surface mapping warnings. Partial snapshots must not
+be treated as complete accounting totals.
 
-ADR-001: no database in synthetic demo. For live OAuth, select a secure,
-durable, server-side encrypted credential/session store before activation.
-Do not use process memory, localStorage, or a cache as financial source of truth.
+## Mutation architecture (not yet activated)
 
-PWA worker caches only versioned static scripts/styles and its public
-offline notice. API responses, OAuth and finance data are always network-only.
+A future write command needs stable source identity, field-level intent,
+reviewable preview, a backup, lock or revision check, idempotency and an
+auditable server-side operation before any narrowly scoped Google mutation.
+There is no live Sheets write API in this build; demo changes remain local.
 
-The read-only workbook normalizer checks observed header sentinels before
-interpreting rows. Mismatched or missing tabs generate warnings, not guessed
-column mappings. Card invoice entries are excluded from payable totals when
-already represented by the consolidated bill ledger.
+Calendar: account due dates → deterministic side-effect-free preview →
+future owner-approved opt-in → dedicated calendar + durable event identity.
+There are no Calendar API write calls today.
+
+PWA caches only public offline assets and immutable static scripts. It
+deliberately does not cache APIs, HTML with identity context, OAuth callbacks
+or financial data. Physical device tests remain mandatory for release.

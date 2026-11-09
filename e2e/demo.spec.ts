@@ -57,3 +57,13 @@ test("health, manifest and synthetic API are cache-safe", async ({ request }) =>
   expect(demo.headers()["x-demo-data"]).toBe("synthetic");
   expect((await demo.json()).mode).toBe("demo");
 });
+
+test("private Google endpoints are disabled without server credentials", async ({ request }) => {
+  const session = await request.get("/api/auth/session");
+  expect(session.ok()).toBeTruthy();
+  expect(await session.json()).toEqual({ configured: false, connected: false });
+  const snapshot = await request.get("/api/finance/snapshot");
+  expect(snapshot.status()).toBe(404);
+  const oauth = await request.get("/api/auth/google/start", { maxRedirects: 0 });
+  expect(oauth.status()).toBe(404);
+});

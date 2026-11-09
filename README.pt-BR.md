@@ -1,34 +1,34 @@
 # Personal Finance Hub
 
-PWA open-source de finanças pessoais em Next.js, React e TypeScript.
-**Estado atual:** demonstração interativa com dados inteiramente fictícios.
-Ela não faz login no Google nem modifica planilhas ou calendários reais.
+PWA open-source de finanças pessoais com Next.js, React e TypeScript.
+O modo padrão é uma **demonstração com dados inteiramente fictícios**.
+Não há alteração de planilhas, contas ou calendários reais.
 
-## O que já funciona
+## Funcionalidades
 
-Dashboard, despesas, contas a pagar, orçamento, relatórios, análises
-determinísticas e prévia de eventos de calendário. Inclusão de despesas
-e quitação de contas são simulações temporárias na sessão.
-Há código para leitura da API Sheets, mas não existe autorização OAuth ativa.
+Dashboard, despesas, contas a pagar, orçamento, relatórios, indicadores,
+prévia de calendário e operações simuladas em memória.
+Foi implementado um fluxo Google OAuth com PKCE, conta permitida, sessão
+criptografada no servidor, logout e integração Sheets **somente leitura**.
+A integração está **desativada por padrão e ainda não foi testada com
+credenciais ou planilha reais**. Google Calendar e escrita Sheets permanecem
+bloqueados.
 
 ## Rodar e testar
 
-Com Node.js 24 e npm: execute npm install e npm run dev.
-Abra http://localhost:3000. Execute npm test, npm run lint,
-npm run typecheck, npm run build e npm run test:e2e.
+Node.js 22+ e npm: `npm ci`, `npm run dev` e
+`http://localhost:3000`. Testes: `npm test`, `npm run lint`,
+`npm run typecheck`, `npm run build` e `npm run test:e2e`.
+Nenhuma credencial é necessária para o modo demonstração.
 
-Consulte docs/sheets-mapping.md para a estrutura saneada da planilha
-existente, docs/architecture.md para arquitetura, docs/security.md
-para os gates de segurança e docs/google-setup.md para OAuth futuro.
-Nenhum dado financeiro real é publicado.
+Consulte `docs/google-setup.md` para ativação privada,
+`docs/security.md` para segurança, `docs/sheets-mapping.md`
+para a estrutura saneada da planilha e `docs/release-checklist.md`
+para as pendências.
 
 ## Instalação
 
-Em hospedagem HTTPS, Android: opção de instalar no navegador.
-No iPhone: Safari, Compartilhar, Adicionar à Tela de Início.
-A instalação e os ícones ainda precisam ser validados em aparelhos reais.
-Offline não armazena transações ou dados sensíveis.
-
-**Pendente:** OAuth seguro com tokens no servidor, validação real,
-backup, escrita idempotente e sync Calendar autorizada, deploy manual
-e revisão técnica final. Licença MIT.
+Em hospedagem HTTPS, o Android pode instalar pelo navegador.
+No iPhone: Safari → Compartilhar → Adicionar à Tela de Início.
+A instalação em aparelhos reais ainda precisa ser validada.
+O modo offline não guarda dados financeiros. Licença MIT.

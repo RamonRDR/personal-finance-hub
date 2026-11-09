@@ -3,56 +3,45 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A privacy-conscious open-source personal finance PWA built with Next.js 16,
-React 19 and TypeScript. The current version is an **interactive public demo**
-with fictional data. It does **not** connect to Google accounts, change real
-spreadsheets or create Calendar events.
+React 19 and strict TypeScript. By default, it is an **interactive synthetic
+demo** with no live Google connection and no persistent mutations.
 
-## Features currently implemented
+## Implemented
 
-- Responsive dashboard, expense ledger, bills, budgets and reporting screens.
-- BRL and Brazilian date parsing, category totals, month comparisons and
-  deterministic spending insights.
-- Synthetic add-expense and mark-as-paid demo interactions (in-memory only).
-- Google Calendar **dry-run** preview with no real event writes.
-- Read-only Google Sheets client code and documented workbook structure,
-  pending secure OAuth activation.
-- PWA manifest, PNG icons, safe service worker, offline notice and mobile UI.
-- Unit, component and browser test suites, plus GitHub Actions CI.
+- Responsive dashboard, expense ledger, bills, budgets and reports.
+- Brazilian currency/date normalization, category insights and invoice
+  double-counting safeguards.
+- Synthetic add-expense and mark-paid controls (in-memory only).
+- Calendar dry-run preview (no event writes).
+- Feature-gated Google OAuth with PKCE, exact verified-owner allowlist,
+  encrypted Redis-backed server session, logout/revocation and refresh logic.
+- Authenticated **read-only** Sheets endpoint and explicit UI source switch.
+  This path requires owner-provided private credentials and is **not yet
+  validated with a real Google login or workbook**.
+- PWA manifest, Android/iOS icons, static-safe service worker, and offline
+  notice. Unit, component, Playwright and GitHub Actions checks.
 
-## Quick start
+## Local demo
 
-Requirements: Node.js 24 (or compatible 22+) and npm.
+Requires Node.js 22+ and npm. Run `npm ci`, `npm run dev`, then open
+`http://localhost:3000`. No credentials needed. Run `npm test`,
+`npm run lint`, `npm run typecheck`, `npm run build`, and
+`npm run test:e2e` (after `npx playwright install chromium`).
 
-1. Run npm ci
-2. Run npm run dev
-3. Open http://localhost:3000
+## Private Google integration
 
-No credentials are required. Test with npm test, npm run lint,
-npm run typecheck, npm run build and npm run test:e2e
-(after npx playwright install chromium).
+See [configuration](docs/google-setup.md) and [security gates](docs/security.md).
+A separate Google Cloud OAuth client, HTTPS origin, owner allowlist and
+encrypted Redis session service are needed for test activation. Never publish
+financial identifiers, spreadsheet rows, credentials or secrets to GitHub.
+Google Calendar writes and Sheets writes **are not available**.
+The default demo never reads or changes personal financial data.
 
-## Architecture and data governance
+Also see [architecture](docs/architecture.md),
+[sanitized workbook structure](docs/sheets-mapping.md),
+[financial rules](docs/financial-rules.md) and
+[release checklist](docs/release-checklist.md).
 
-Read [the architecture](docs/architecture.md),
-[the real workbook's sanitized structural mapping](docs/sheets-mapping.md),
-[security gates](docs/security.md) and
-[Google configuration checklist](docs/google-setup.md).
-Only synthetically generated demo data appears in the repository.
-The real workbook is never written to. Card invoices are not automatically
-counted as extra purchases.
-
-The live Google OAuth and token store, spreadsheet write functionality,
-Calendar writes, conflict-safe sync and real mobile PWA verification
-**remain to be implemented and authorized**. This is not a complete
-production-ready integration.
-
-## PWA installation
-
-When hosted on HTTPS with a supported browser, use the browser's install
-option on Android or Safari's Share > Add to Home Screen on iPhone.
-PNG icons are provided for Android (192px and 512px) and iOS (180px);
-physical-device validation remains a release gate. Offline mode displays
-a public connectivity notice; it does not store transactions.
-
-No deployment occurs automatically. Never use personal financial data in
-the public demo. This project is available under the MIT License.
+The PWA can be installed on supported browsers over HTTPS; actual
+installation on iOS/Android devices is still unverified. No deployment or
+merge has been authorized or performed. License: MIT.

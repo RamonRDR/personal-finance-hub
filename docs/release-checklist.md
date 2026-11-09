@@ -18,10 +18,13 @@ This is a staged project, not a complete production finance tool.
 
 ## Still pending before live use
 
-- [ ] Secure Google OAuth login and logout with owner-only access
-- [ ] Durable, encrypted server-side storage for session and tokens
-- [ ] Token expiry, refresh, revocation and permission tests
-- [ ] Real Google Sheets read using an approved identity and test workbook
+- [ ] Provision private Google Cloud OAuth test credentials, restricted identity and encrypted session backend
+- [ ] Validate the OAuth callback, read-only scopes, real workbook access and response mapping with consent
+
+- [x] Implement Google OAuth login/logout with PKCE and owner-only identity checks (not yet activated)
+- [x] Implement encrypted Redis-backed server sessions, expiry and server-side refresh (not yet provisioned)
+- [ ] Full integration tests for expiry, refresh, revocation and permissions against an authorized test setup
+- [x] Implement explicit authenticated read-only Sheets endpoint and UI source switch (not yet validated on live Google)
 - [ ] Source field mapping approval, immutable IDs and write conflict strategy
 - [ ] Backup + preview + explicitly approved real write mode
 - [ ] Secure audit history and idempotent paid/expense operations

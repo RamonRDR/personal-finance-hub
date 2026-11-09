@@ -73,8 +73,9 @@ describe("encrypted Redis session boundary", () => {
     ).rejects.toThrow("Expired session");
     const handle = newSessionHandle();
     await saveSession(handle, sample(), config);
-    expect(await findSession(handle, { ...config, allowedEmail: "different@example.com" }))
-      .toBeNull();
+    expect(
+      await findSession(handle, { ...config, allowedEmail: "different@example.com" }),
+    ).toBeNull();
   });
 
   it("fails closed when encrypted storage is corrupted", async () => {

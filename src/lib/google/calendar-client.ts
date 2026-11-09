@@ -18,7 +18,12 @@ export async function applyCalendarChange(
   accessToken: string,
   gate: CalendarWriteGate,
 ): Promise<CalendarWriteResult> {
-  if (!gate.enabled || !gate.approved || !gate.dedicatedCalendarId || gate.dedicatedCalendarId === "primary") {
+  if (
+    !gate.enabled ||
+    !gate.approved ||
+    !gate.dedicatedCalendarId ||
+    gate.dedicatedCalendarId === "primary"
+  ) {
     throw new Error("Calendar synchronization requires explicit approval and a dedicated calendar");
   }
   if (!accessToken) throw new Error("Calendar authorization required");

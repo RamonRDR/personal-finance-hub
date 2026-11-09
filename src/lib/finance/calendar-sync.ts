@@ -42,7 +42,13 @@ const APP_ID = "personal-finance-hub";
 
 export function calendarEventId(stableBillId: string): string {
   if (!UUID.test(stableBillId)) throw new Error("Calendar sync requires an immutable UUID");
-  return "pfh" + createHash("sha256").update(APP_ID + ":" + stableBillId.toLowerCase()).digest("hex").slice(0, 32);
+  return (
+    "pfh" +
+    createHash("sha256")
+      .update(APP_ID + ":" + stableBillId.toLowerCase())
+      .digest("hex")
+      .slice(0, 32)
+  );
 }
 
 function nextDay(date: string): string {
@@ -95,10 +101,7 @@ export function planCalendarSynchronization(
       plan.push({ action: "create", billId: stableId, eventId, payload });
       continue;
     }
-    if (
-      found.privateProperties?.app !== APP_ID ||
-      found.privateProperties.billId !== stableId
-    ) {
+    if (found.privateProperties?.app !== APP_ID || found.privateProperties.billId !== stableId) {
       plan.push({
         action: "conflict",
         billId: stableId,
@@ -109,9 +112,7 @@ export function planCalendarSynchronization(
       continue;
     }
     const same =
-      found.date === date &&
-      found.summary === summary &&
-      found.reminderMinutes === reminderMinutes;
+      found.date === date && found.summary === summary && found.reminderMinutes === reminderMinutes;
     if (same) {
       plan.push({ action: "unchanged", billId: stableId, eventId, payload });
     } else if (!found.etag) {

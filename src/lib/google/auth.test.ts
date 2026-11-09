@@ -85,7 +85,10 @@ describe("authorized Google access token", () => {
       ...session(),
       accessExpiresAt: Date.now() - 1000,
     });
-    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: false })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: false })),
+    );
     expect(await authorizedGoogleToken(request, config)).toBeNull();
     expect(saveSession).not.toHaveBeenCalled();
   });

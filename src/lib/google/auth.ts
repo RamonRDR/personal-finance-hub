@@ -20,7 +20,7 @@ interface OAuthTokenReply {
 
 const READ_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 function hasReadOnlySheetsPermission(scopes: string | undefined): boolean {
-  return typeof scopes === "string" && scopes.split(/\\s+/u).includes(READ_SCOPE);
+  return typeof scopes === "string" && scopes.split(/\s+/u).includes(READ_SCOPE);
 }
 
 export async function exchangeGoogleCode(config: GoogleConfig, code: string, verifier: string) {

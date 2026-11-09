@@ -1,7 +1,7 @@
 import "server-only";
 import type { NextRequest } from "next/server";
 import type { GoogleConfig } from "./config";
-import { findSession, saveSession } from "./session-store";
+import { findSession, revokeSession, saveSession } from "./session-store";
 
 export const SESSION_COOKIE = "pfh_session";
 export const FLOW_COOKIE = "pfh_google_flow";
@@ -14,6 +14,13 @@ interface OAuthTokenReply {
   access_token?: string;
   refresh_token?: string;
   expires_in?: number;
+  token_type?: string;
+  scope?: string;
+}
+
+const READ_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
+function hasReadOnlySheetsPermission(scopes: string | undefined): boolean {
+  return typeof scopes === "string" && scopes.split(/\\s+/u).includes(READ_SCOPE);
 }
 
 export async function exchangeGoogleCode(config: GoogleConfig, code: string, verifier: string) {
@@ -33,8 +40,16 @@ export async function exchangeGoogleCode(config: GoogleConfig, code: string, ver
   });
   if (!response.ok) throw new Error("Google authorization failed");
   const token = (await response.json()) as OAuthTokenReply;
-  if (!token.access_token || !token.refresh_token || !Number.isFinite(token.expires_in)) {
-    throw new Error("Google did not issue a renewable session");
+  if (
+    !token.access_token ||
+    !token.refresh_token ||
+    token.token_type !== "Bearer" ||
+    !hasReadOnlySheetsPermission(token.scope) ||
+    !Number.isFinite(token.expires_in) ||
+    !Number.isInteger(token.expires_in) ||
+    token.expires_in! <= 0
+  ) {
+    throw new Error("Google did not grant a renewable read-only Sheets session");
   }
   return {
     accessToken: token.access_token,
@@ -73,9 +88,21 @@ export async function authorizedGoogleToken(
     cache: "no-store",
     signal: AbortSignal.timeout(10000),
   });
-  if (!response.ok) return null;
+  if (!response.ok) {
+    if (response.status === 400 || response.status === 401) {
+      // A rejected refresh token is invalid or revoked; prevent stale sessions.
+      await revokeSession(handle, config);
+    }
+    return null;
+  }
   const next = (await response.json()) as OAuthTokenReply;
-  if (!next.access_token || !Number.isFinite(next.expires_in)) return null;
+  if (
+    !next.access_token ||
+    !Number.isFinite(next.expires_in) ||
+    !Number.isInteger(next.expires_in) ||
+    next.expires_in! <= 0 ||
+    (next.scope !== undefined && !hasReadOnlySheetsPermission(next.scope))
+  ) return null;
   await saveSession(
     handle!,
     {

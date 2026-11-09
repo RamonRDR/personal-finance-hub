@@ -2,13 +2,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { NextRequest } from "next/server";
 import type { GoogleConfig } from "./config";
 import type { StoredSession } from "./token-vault";
-import { authorizedGoogleToken } from "./auth";
-import { findSession, saveSession } from "./session-store";
+import { authorizedGoogleToken, exchangeGoogleCode } from "./auth";
+import { findSession, revokeSession, saveSession } from "./session-store";
 
 vi.mock("server-only", () => ({}));
 vi.mock("./session-store", () => ({
   findSession: vi.fn(),
   saveSession: vi.fn(),
+  revokeSession: vi.fn(),
 }));
 
 const config = {
@@ -91,5 +92,50 @@ describe("authorized Google access token", () => {
     );
     expect(await authorizedGoogleToken(request, config)).toBeNull();
     expect(saveSession).not.toHaveBeenCalled();
+  });
+});
+
+describe("Google token exchange scope verification", () => {
+  const scopedResponse = (scope: string) => ({
+    ok: true,
+    json: async () => ({
+      access_token: "synthetic-access",
+      refresh_token: "synthetic-refresh",
+      expires_in: 3600,
+      token_type: "Bearer",
+      scope,
+    }),
+  });
+
+  it("accepts the explicitly granted read-only Sheets scope", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets.readonly")),
+    );
+    const result = await exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce-verifier");
+    expect(result.accessToken).toBe("synthetic-access");
+    expect(result.refreshToken).toBe("synthetic-refresh");
+  });
+
+  it("rejects an omitted or reduced Sheets grant", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => scopedResponse("openid email")));
+    await expect(exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce")).rejects.toThrow(
+      "read-only Sheets session",
+    );
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => scopedResponse("openid email https://www.googleapis.com/auth/spreadsheets")),
+    );
+    await expect(exchangeGoogleCode(config, "synthetic-code", "synthetic-pkce")).rejects.toThrow();
+  });
+
+  it("revokes the local session when Google invalidates its refresh token", async () => {
+    vi.mocked(findSession).mockResolvedValue({
+      ...session(),
+      accessExpiresAt: Date.now() - 1000,
+    });
+    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: false, status: 400 })));
+    expect(await authorizedGoogleToken(request, config)).toBeNull();
+    expect(revokeSession).toHaveBeenCalledWith("synthetic-browser-handle", config);
   });
 });

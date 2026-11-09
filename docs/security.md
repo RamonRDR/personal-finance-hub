@@ -13,7 +13,8 @@ provided. No Google writes or Calendar mutation endpoints exist.
   host-only, path `/`). No refresh/access token in browser cookies.
 - Server-side Redis sessions with random opaque handles hashed for lookup,
   AES-256-GCM encryption at rest, seven-day fixed expiry and explicit revocation.
-- Server-side token refresh; authenticated read-only Sheets endpoint.
+- Server-side token refresh with invalid-token revocation, exact validation of the
+  returned Sheets read-only scope, and an authenticated read-only endpoint.
 - Private no-store responses for identity and financial data; no sensitive
   PWA offline caching. Logout requires a same-origin POST.
 - No Google write routes; mutations in demo mode are session-only simulations.

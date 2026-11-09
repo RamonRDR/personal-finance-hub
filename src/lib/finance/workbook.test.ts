@@ -78,4 +78,15 @@ describe("workbook mapping validation", () => {
       code: "invalid-header",
     });
   });
+  it("reports repeated transactions as warnings without erasing possible real purchases", () => {
+    const data = fixture();
+    data.monthly.push([...data.monthly[6]]);
+    const result = normalizeReadOnlyWorkbook({ "Novembro 2026": data.monthly });
+    expect(result.snapshot.expenses).toHaveLength(2);
+    expect(result.warnings).toContainEqual({
+      tab: "Novembro 2026",
+      row: 8,
+      code: "possible-duplicate",
+    });
+  });
 });

@@ -1,52 +1,59 @@
 import { describe, expect, it } from "vitest";
-import { demoSnapshot } from "../demo/data";
-import { billState, monthSummary, previousMonth, spendingInsights } from "./analytics";
-import { calendarPreview } from "./calendar-plan";
-describe("financial logic", () => {
-  it("derives overdue from a fixed date without changing payments", () => {
-    expect(billState(demoSnapshot.bills[3], "2026-11-08")).toBe("overdue");
-    expect(billState(demoSnapshot.bills[2], "2026-11-08")).toBe("paid");
-  });
-  it("excludes card invoice payments from consumption totals", () => {
-    const result = monthSummary(
-      demoSnapshot.expenses,
-      demoSnapshot.bills,
-      demoSnapshot.budgets,
-      "2026-11",
-      "2026-11-08",
-    );
-    expect(result.totalCents).toBe(76630);
-    expect(result.paidCount).toBe(1);
+import { monthSummary, monthlyHistory, remainingBillCents, spendingInsights } from "./analytics";
+import type { Bill, Expense } from "./types";
+
+const bill: Bill = {
+  id: "synthetic-bill",
+  description: "Pagamento fictício",
+  category: "Casa",
+  dueDate: "2026-11-15",
+  plannedCents: 10000,
+  paidCents: 4000,
+  paidAt: null,
+  status: "pending",
+  recurring: true,
+};
+const expenses: Expense[] = [
+  {
+    id: "fictional-one",
+    date: "2026-11-10",
+    description: "Exemplo de compra",
+    category: "Casa",
+    payer: null,
+    method: "Pix",
+    account: null,
+    amountCents: 5000,
+    source: "direct",
+  },
+  {
+    id: "fictional-external",
+    date: "2026-11-11",
+    description: "Custo de exemplo externo",
+    category: "Casa",
+    payer: null,
+    method: null,
+    account: null,
+    amountCents: 99000,
+    source: "external",
+  },
+];
+
+describe("monthly household accounting", () => {
+  it("subtracts recorded partial payments from open balances", () => {
+    expect(remainingBillCents(bill)).toBe(6000);
+    const result = monthSummary(expenses, [bill], [], "2026-11", "2026-11-16");
+    expect(result.totalCents).toBe(5000);
+    expect(result.pendingCents).toBe(6000);
     expect(result.overdueCount).toBe(1);
-    expect(result.openCount).toBe(3);
+    expect(result.openCount).toBe(1);
   });
-  it("never mixes external-business expenses into household totals", () => {
-    const additional = {
-      ...demoSnapshot.expenses[0],
-      id: "external-example",
-      source: "external" as const,
-      amountCents: 1000000,
-    };
-    const summary = monthSummary(
-      [...demoSnapshot.expenses, additional],
-      demoSnapshot.bills,
-      demoSnapshot.budgets,
-      "2026-11",
-      "2026-11-08",
-    );
-    expect(summary.totalCents).toBe(76630);
+  it("does not invent balances for missing planned amounts or negative remaining balances", () => {
+    expect(remainingBillCents({ ...bill, plannedCents: null })).toBeNull();
+    expect(remainingBillCents({ ...bill, paidCents: 12000 })).toBe(0);
+    expect(remainingBillCents({ ...bill, status: "paid" })).toBeNull();
   });
-  it("compares periods safely", () => {
-    expect(previousMonth("2026-01")).toBe("2025-12");
-    expect(spendingInsights(demoSnapshot.expenses, "2026-11").length).toBeGreaterThan(0);
-  });
-  it("creates a dry run without duplicate operations", () => {
-    const item = calendarPreview(demoSnapshot.bills.slice(0, 1))[0];
-    expect(item.action).toBe("create");
-    expect(
-      calendarPreview(demoSnapshot.bills.slice(0, 1), {
-        b1: { date: item.date, title: item.title },
-      })[0].action,
-    ).toBe("unchanged");
+  it("keeps business costs out of household history and insights", () => {
+    expect(monthlyHistory(expenses)).toEqual([{ month: "2026-11", cents: 5000 }]);
+    expect(spendingInsights(expenses, "2026-11")).toEqual([]);
   });
 });

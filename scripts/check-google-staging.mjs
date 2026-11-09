@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // Validates only the presence and safe shape of private staging configuration.
 // Intentionally prints no credential, private Google identity or sheet identifier.
-import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);

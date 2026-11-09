@@ -12,6 +12,12 @@ export function categoryTotals(entries: Expense[]): Array<{ category: string; ce
     .map(([category, cents]) => ({ category, cents }))
     .sort((a, b) => b.cents - a.cents);
 }
+export function remainingBillCents(bill: Bill): number | null {
+  if (bill.status !== "pending" || bill.plannedCents === null) return null;
+  if (bill.paidCents === null) return bill.plannedCents;
+  // Payments recorded against a pending bill reduce its open balance.
+  return Math.max(0, bill.plannedCents - bill.paidCents);
+}
 export function monthSummary(
   expenses: Expense[],
   bills: Bill[],
@@ -24,7 +30,7 @@ export function monthSummary(
   const totalCents = current.reduce((sum, e) => sum + e.amountCents, 0);
   const paidBills = monthBills.filter((b) => b.status === "paid");
   const unpaidBills = monthBills.filter((b) => b.status === "pending");
-  const pendingCents = unpaidBills.reduce((sum, b) => sum + (b.plannedCents ?? 0), 0);
+  const pendingCents = unpaidBills.reduce((sum, b) => sum + (remainingBillCents(b) ?? 0), 0);
   const categories = categoryTotals(current);
   const budgetUse = budgets.map((budget) => ({
     ...budget,

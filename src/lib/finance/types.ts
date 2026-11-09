@@ -9,6 +9,10 @@ export interface Expense {
   account: string | null;
   amountCents: number;
   source: LedgerSource;
+  /** Optional source metadata for installment recognition; never a write target. */
+  purchaseDate?: string | null;
+  dueDate?: string | null;
+  installmentLabel?: string | null;
 }
 export type PaymentStatus = "pending" | "paid" | "cancelled";
 export interface Bill {
@@ -31,9 +35,13 @@ export interface ImportWarning {
   row: number;
   code:
     | "invalid-date"
+    | "invalid-due-date"
+    | "invalid-paid-date"
+    | "invalid-status"
     | "invalid-money"
     | "missing-description"
     | "duplicate"
+    | "possible-duplicate"
     | "missing-tab"
     | "invalid-header";
 }

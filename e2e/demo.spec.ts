@@ -17,6 +17,8 @@ test("demo renders and allows a synthetic expense", async ({ page }) => {
   await page.getByPlaceholder("Ex.: Mercado Exemplo").fill("Compra fictícia de teste");
   await page.getByPlaceholder("89,90").fill("89,90");
   await page.getByRole("button", { name: "Adicionar na demo" }).click();
+  await expect(page.getByRole("dialog", { name: "Revisar alteração da demonstração" })).toBeVisible();
+  await page.getByRole("button", { name: "Confirmar alteração da demo" }).click();
   await expect(page.getByText("Compra fictícia de teste")).toBeVisible();
   await expect(page.getByRole("status")).toContainText("Não foi salva no Google Sheets");
 });
@@ -26,6 +28,8 @@ test("simulated payment stays local and calendar remains a dry run", async ({ pa
   await openSection(page, "Contas");
   await expect(page.getByRole("heading", { name: "Contas", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Marcar paga (demo)" }).first().click();
+  await expect(page.getByRole("dialog", { name: "Revisar alteração da demonstração" })).toBeVisible();
+  await page.getByRole("button", { name: "Confirmar alteração da demo" }).click();
   await expect(page.getByRole("status")).toContainText("Nenhuma alteração foi enviada");
   await openSection(page, "Calendário");
   await expect(page.getByRole("heading", { name: "Pré-visualização do calendário" })).toBeVisible();

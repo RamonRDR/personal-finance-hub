@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { GoogleConnector } from "./GoogleConnector";
 import {
   LayoutDashboard,
@@ -33,6 +33,7 @@ import {
 } from "@/lib/finance/analytics";
 import { calendarPreview } from "@/lib/finance/calendar-plan";
 import type { Bill, Budget, Expense, Snapshot, ImportWarning } from "@/lib/finance/types";
+import { previewFinanceChange, type FinanceCommand, type WritePreview } from "@/lib/finance/write-preview";
 
 type View =
   | "Dashboard"
@@ -101,6 +102,11 @@ function MiniCard({
 
 export function FinanceApp() {
   const [view, setView] = useState<View>("Dashboard");
+  const [demoRevision, setDemoRevision] = useState(0);
+  const processedOperationIds = useRef(new Set<string>());
+  const [pendingChange, setPendingChange] = useState<Extract<WritePreview, { status: "ready" }> | null>(null);
+  const [pendingKind, setPendingKind] = useState<"expense" | "payment" | null>(null);
+  const [duplicateCommand, setDuplicateCommand] = useState<Extract<FinanceCommand, { type: "add-expense" }> | null>(null);
   const [dataMode, setDataMode] = useState<"demo" | "google-read-only">("demo");
   const [month, setMonth] = useState("2026-11");
   const [expenses, setExpenses] = useState<Expense[]>(demoSnapshot.expenses);
@@ -136,6 +142,28 @@ export function FinanceApp() {
       ? Math.round((summary.totalCents / lastMonth.totalCents - 1) * 100)
       : null;
 
+  function proposeDemoChange(command: FinanceCommand, kind: "expense" | "payment") {
+    const result = previewFinanceChange(
+      { expenses, bills, budgets, lastSyncedAt: null, mode: dataMode },
+      command,
+      { currentRevision: "demo-" + demoRevision, processedOperationIds: processedOperationIds.current },
+    );
+    if (result.status === "blocked") {
+      if (result.reason === "possible-duplicate" && command.type === "add-expense") {
+        setDuplicateCommand(command);
+        setShowForm(false);
+        setNotice("Possível despesa repetida. Revise antes de confirmar novamente.");
+      } else {
+        setNotice("Operação bloqueada por validação, duplicidade ou dados desatualizados.");
+      }
+      return;
+    }
+    setDuplicateCommand(null);
+    setPendingKind(kind);
+    setPendingChange(result);
+    setShowForm(false);
+  }
+
   function addDemoExpense(event: FormEvent) {
     event.preventDefault();
     if (dataMode !== "demo") return;
@@ -144,43 +172,77 @@ export function FinanceApp() {
       setNotice("Confira descrição, data e valor.");
       return;
     }
-    setExpenses((list) => [
+    proposeDemoChange(
       {
-        id: "demo-" + (list.length + 1),
-        date,
-        description: description.trim(),
-        category,
-        payer: "Pessoa A",
-        method: "Pix",
-        account: "Conta Exemplo",
-        amountCents: cents,
-        source: "direct",
+        type: "add-expense",
+        operationId: crypto.randomUUID(),
+        expectedRevision: "demo-" + demoRevision,
+        expense: {
+          id: crypto.randomUUID(),
+          date,
+          description: description.trim(),
+          category,
+          payer: "Pessoa A",
+          method: "Pix",
+          account: "Conta Exemplo",
+          amountCents: cents,
+          source: "direct",
+        },
       },
-      ...list,
-    ]);
-    setShowForm(false);
-    setDescription("");
-    setValue("");
-    setMonth(date.slice(0, 7));
-    setView("Despesas");
-    setNotice("Despesa simulada adicionada. Não foi salva no Google Sheets.");
+      "expense",
+    );
   }
+
   function markPaid(id: string) {
     if (dataMode !== "demo") return;
-    setBills((list) =>
-      list.map((bill) =>
-        bill.id === id
-          ? {
-              ...bill,
-              status: "paid",
-              paidCents: bill.plannedCents,
-              paidAt: asOf,
-            }
-          : bill,
-      ),
+    const bill = bills.find((item) => item.id === id);
+    if (!bill || bill.plannedCents === null) {
+      setNotice("Não é possível confirmar uma conta sem valor previsto.");
+      return;
+    }
+    proposeDemoChange(
+      {
+        type: "mark-bill-paid",
+        operationId: crypto.randomUUID(),
+        expectedRevision: "demo-" + demoRevision,
+        billId: id,
+        amountCents: bill.plannedCents,
+        paidAt: asOf,
+      },
+      "payment",
     );
-    setNotice("Pagamento simulado. Nenhuma alteração foi enviada à planilha.");
   }
+
+  function approveDemoChange() {
+    if (!pendingChange) return;
+    if (
+      dataMode !== "demo" ||
+      pendingChange.expectedRevision !== "demo-" + demoRevision ||
+      processedOperationIds.current.has(pendingChange.operationId)
+    ) {
+      setPendingChange(null);
+      setNotice("Prévia vencida. Atualize os dados e tente novamente.");
+      return;
+    }
+    processedOperationIds.current.add(pendingChange.operationId);
+    setExpenses(pendingChange.proposedSnapshot.expenses);
+    setBills(pendingChange.proposedSnapshot.bills);
+    setBudgets(pendingChange.proposedSnapshot.budgets);
+    setDemoRevision((current) => current + 1);
+    if (pendingKind === "expense") {
+      const newest = pendingChange.proposedSnapshot.expenses.at(-1);
+      if (newest) setMonth(newest.date.slice(0, 7));
+      setView("Despesas");
+      setDescription("");
+      setValue("");
+      setNotice("Despesa simulada adicionada. Não foi salva no Google Sheets.");
+    } else {
+      setNotice("Pagamento simulado. Nenhuma alteração foi enviada à planilha.");
+    }
+    setPendingChange(null);
+    setPendingKind(null);
+  }
+
   function editBudget(target: string, input: string) {
     if (dataMode !== "demo") return;
     const cents = parseMoneyCents(input);
@@ -191,6 +253,7 @@ export function FinanceApp() {
     setBudgets((list) =>
       list.map((b) => (b.category === target ? { ...b, limitCents: cents } : b)),
     );
+    setDemoRevision((current) => current + 1);
     setNotice("Orçamento da demonstração atualizado nesta sessão.");
   }
   function restoreDemo() {
@@ -198,6 +261,10 @@ export function FinanceApp() {
     setBills(demoSnapshot.bills);
     setBudgets(demoSnapshot.budgets);
     setDataMode("demo");
+    setDemoRevision((current) => current + 1);
+    processedOperationIds.current.clear();
+    setPendingChange(null);
+    setDuplicateCommand(null);
     setNotice("Demonstração restaurada.");
   }
   function showReadOnlyWorkbook(snapshot: Snapshot, warnings: ImportWarning[]) {
@@ -206,6 +273,9 @@ export function FinanceApp() {
     setBills(snapshot.bills);
     setBudgets(snapshot.budgets);
     setDataMode("google-read-only");
+    setDemoRevision((current) => current + 1);
+    setPendingChange(null);
+    setDuplicateCommand(null);
     setShowForm(false);
     setView("Dashboard");
     setNotice(
@@ -334,7 +404,14 @@ export function FinanceApp() {
           {notice && (
             <div role="status" className="notice">
               {notice}
-              <button onClick={() => setNotice("")} aria-label="Fechar aviso">
+              {duplicateCommand && dataMode === "demo" && (
+                <button onClick={() => {
+                  proposeDemoChange({ ...duplicateCommand, duplicateAcknowledged: true }, "expense");
+                }}>
+                  Revisar mesmo assim
+                </button>
+              )}
+              <button onClick={() => { setNotice(""); setDuplicateCommand(null); }} aria-label="Fechar aviso">
                 <X size={16} />
               </button>
             </div>
@@ -884,6 +961,50 @@ export function FinanceApp() {
           </div>
         </div>
       )}
+      {pendingChange && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setPendingChange(null)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Revisar alteração da demonstração"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-head">
+              <h2>Prévia da alteração</h2>
+              <button aria-label="Cancelar prévia" onClick={() => setPendingChange(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <p>Confira os campos antes de confirmar. Esta operação é fictícia e não será enviada ao Google.</p>
+            <ul className="preview-change-list">
+              {pendingChange.changes.map((change) => (
+                <li key={change.entity + change.id + change.field}>
+                  <strong>{change.field === "record" ? "Descrição" : change.field === "amountCents" ? "Valor" : change.field === "paidCents" ? "Valor pago" : change.field === "paidAt" ? "Data do pagamento" : "Situação"}: </strong>
+                  <span>
+                    {change.field === "amountCents" || change.field === "paidCents"
+                      ? formatMoney(Number(change.after))
+                      : change.field === "paidAt"
+                        ? formatDate(String(change.after))
+                        : change.field === "status"
+                          ? "Pago"
+                          : String(change.after)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="preview-actions">
+              <button type="button" className="button-primary" onClick={approveDemoChange}>
+                Confirmar alteração da demo
+              </button>
+              <button type="button" className="secondary-action" onClick={() => setPendingChange(null)}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

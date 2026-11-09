@@ -128,7 +128,7 @@ export const demoSnapshot: Snapshot = {
   ],
   bills: [
     {
-      id: "b1",
+      id: "493c25e6-a956-4efd-a3f6-8c9debc5fdf9",
       dueDate: "2026-11-10",
       description: "Condomínio Exemplo",
       category: "Casa",
@@ -139,7 +139,7 @@ export const demoSnapshot: Snapshot = {
       recurring: true,
     },
     {
-      id: "b2",
+      id: "73657063-93a1-4fef-96ef-ab1104b8b93f",
       dueDate: "2026-11-12",
       description: "Água Exemplo",
       category: "Casa",
@@ -150,7 +150,7 @@ export const demoSnapshot: Snapshot = {
       recurring: true,
     },
     {
-      id: "b3",
+      id: "b84597d6-2c59-4b86-b9d8-55cde01c0e2b",
       dueDate: "2026-11-03",
       description: "Internet de Exemplo",
       category: "Casa",
@@ -161,7 +161,7 @@ export const demoSnapshot: Snapshot = {
       recurring: true,
     },
     {
-      id: "b4",
+      id: "cf24b756-05ae-4389-8b66-a59b2e1570e8",
       dueDate: "2026-11-06",
       description: "Cartão Demo",
       category: "Cartão",
@@ -172,7 +172,7 @@ export const demoSnapshot: Snapshot = {
       recurring: false,
     },
     {
-      id: "b5",
+      id: "70f3dcc2-d755-438b-bc15-1f97856e4186",
       dueDate: "2026-12-03",
       description: "Internet de Exemplo",
       category: "Casa",

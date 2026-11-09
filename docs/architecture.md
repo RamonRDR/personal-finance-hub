@@ -43,3 +43,18 @@ Calendar transport enforces an explicit approval gate and uses ETags to avoid
 silent concurrent updates. Tests run against mocked network responses only.
 No API route calls the transport; the current Google OAuth does not request a
 Calendar write scope, so real synchronization is not enabled.
+
+## Financial safety refinement
+
+The read adapter now preserves card-installment purchase dates and labels,
+but recognizes installment spending in the installment due month. The
+normalizer reports possible semantic duplicates without destroying either
+row. Formula-status errors are not transformed into invented pending bills.
+Pending balances subtract recorded partial payments.
+
+The public UI uses a pure `previewFinanceChange` before simulated
+financial changes. It displays changed fields and requires explicit
+confirmation. The function rejects volatile row numbers as write IDs,
+stale revisions, repeated idempotency keys and any Google read-only source.
+This is an in-memory demo safety model; only a future persistent server-side
+executor can enforce revisions and idempotency atomically on Google Sheets.

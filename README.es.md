@@ -7,7 +7,9 @@ hoja de cálculo o calendario real.
 ## Funcionalidades
 
 Panel, gastos, facturas, presupuestos, informes y vista previa del calendario.
-Las operaciones de ejemplo solo cambian datos temporales en el navegador.
+Las operaciones de ejemplo requieren una vista previa y confirmación; solo
+cambian datos temporales en el navegador. Las cuotas se atribuyen al mes de
+vencimiento y las posibles transacciones duplicadas se señalan sin borrarlas.
 Se ha implementado OAuth de Google con PKCE, acceso limitado a una identidad
 verificada, sesiones cifradas en el servidor y un lector de Sheets **solo
 lectura**. Este acceso está **desactivado por defecto y sin validación con

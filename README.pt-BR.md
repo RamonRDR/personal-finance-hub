@@ -7,7 +7,9 @@ Não há alteração de planilhas, contas ou calendários reais.
 ## Funcionalidades
 
 Dashboard, despesas, contas a pagar, orçamento, relatórios, indicadores,
-prévia de calendário e operações simuladas em memória.
+prévia de calendário e operações simuladas em memória, agora com conferência
+obrigatória de alterações. Parcelamentos seguem o mês de vencimento de cada
+parcela; gastos potencialmente repetidos são sinalizados, sem exclusão automática.
 Foi implementado um fluxo Google OAuth com PKCE, conta permitida, sessão
 criptografada no servidor, logout e integração Sheets **somente leitura**.
 A integração está **desativada por padrão e ainda não foi testada com

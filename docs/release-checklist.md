@@ -25,8 +25,10 @@ This is a staged project, not a complete production finance tool.
 - [x] Implement encrypted Redis-backed server sessions, expiry and server-side refresh (not yet provisioned)
 - [ ] Full integration tests for expiry, refresh, revocation and permissions against an authorized test setup
 - [x] Implement explicit authenticated read-only Sheets endpoint and UI source switch (not yet validated on live Google)
-- [ ] Source field mapping approval, immutable IDs and write conflict strategy
-- [ ] Backup + preview + explicitly approved real write mode
+- [x] Pure write-preview rules with UUIDs, revision preconditions, replay checks and explicit field diffs (demo only)
+- [x] Reviewable duplicate warnings, installment due-month recognition and partial-payment balances
+- [ ] Owner-approved real source field mapping, durable worksheet IDs and atomic write conflict strategy
+- [ ] Workbook backup + real write preview + explicitly approved production write mode
 - [ ] Secure audit history and idempotent paid/expense operations
 - [x] Calendar sync planner and mock transport with stable UUIDs, ETags, dedicated-calendar guard and duplicate-event protection
 - [ ] Owner-authorized Calendar OAuth scope, persistent event links and protected live sync

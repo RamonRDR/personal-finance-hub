@@ -9,9 +9,11 @@ demo** with no live Google connection and no persistent mutations.
 ## Implemented
 
 - Responsive dashboard, expense ledger, bills, budgets and reports.
-- Brazilian currency/date normalization, category insights and invoice
+- Brazilian currency/date normalization, installment due-month recognition,
+  partial-payment balances, reviewed duplicates, category insights and invoice
   double-counting safeguards.
-- Synthetic add-expense and mark-paid controls (in-memory only).
+- Synthetic expense and mark-paid interactions with explicit field-level previews,
+  duplicate warnings and confirmation (in-memory only).
 - Calendar dry-run preview (no event writes).
 - Feature-gated Google OAuth with PKCE, exact verified-owner allowlist,
   encrypted Redis-backed server session, logout/revocation and refresh logic.
